@@ -78,7 +78,7 @@ class SodsCell:
 		return out
 	
 	def exportXml(self, i = 0, j = 0):
-		''' export cell data as html table cell '''
+		''' export cell data as xml table cell '''
 		
 		# create cell string
 		out = '''
@@ -106,8 +106,7 @@ class SodsCell:
 	<condition_state>{16}</condition_state>
 	<condition_color>{17}</condition_color>
 	<condition_background_color>{18}</condition_background_color>
-</cell>
-		'''.format(i, j,
+</cell>'''.format(i, j,
 				self.color, self.font_family, self.font_size,
 				self.background_color, 
 				self.border_top, self.border_bottom, 

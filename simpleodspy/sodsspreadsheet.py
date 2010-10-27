@@ -197,7 +197,7 @@ class SodsSpreadSheet(SodsTable):
 		return
 	
 	def getRangeString(self, cells):
-		''' create a string of cells from rabge '''
+		''' create a string of cells from range '''
 		
 		# we work with a string, 
 		# get the re.group string
@@ -295,14 +295,13 @@ class SodsSpreadSheet(SodsTable):
 		if type(j_range) != type(list()):
 			j_range = [j_range]
 		
-		# loop and create the cells sum
+		# loop and update the cells value
 		for i in i_range:
 			for j in j_range:
 				cell = self.encodeColName(j) + str(i)
 				self.updateOneCell(cell)
 		
 		return
-	
 	
 if __name__ == "__main__":
 	
@@ -321,12 +320,12 @@ if __name__ == "__main__":
 	t.setValue("D2", "= A2 + 3")
 	
 	t.setCell("A3:D3", border_top = "1pt solid #ff0000")
-	t.setValue("C3", "sum:")
-	t.setValue("D3", "= sum(A2:D2)")
+	t.setValue("C3", "Sum of cells:")
+	t.setValue("D3", "=sum(A2:D2)")
 	
 	t.setCell("D2:D3", condition = "value()<=200")
 	
 	t.updateCell("A1:G3")
 	
-	file("test.html","w").write(t.exportHtml(16,16))
+	file("test.html","w").write(t.exportHtml(16,16)) 
 	
