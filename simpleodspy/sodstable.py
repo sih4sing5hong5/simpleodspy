@@ -31,20 +31,8 @@ class SodsTable:
 		self.rows = {}
 		
 		# dtd for the xml import/export
-		self.dtd= '''<!DOCTYPE table [
-<!ELEMENT table (cell*)>
-<!ELEMENT cell (i?,j?,value,cellType,bgcolor,color,size,face,bold,border)>
-<!ELEMENT i (#PCDATA)>
-<!ELEMENT j (#PCDATA)>
-<!ELEMENT value (#PCDATA)>
-<!ELEMENT cellType (#PCDATA)>
-<!ELEMENT bgcolor (#PCDATA)>
-<!ELEMENT color (#PCDATA)>
-<!ELEMENT size (#PCDATA)>
-<!ELEMENT face (#PCDATA)>
-<!ELEMENT bold (#PCDATA)>
-<!ELEMENT border (#PCDATA)>
-]>'''
+		# TODO: add dtd or scheme
+		self.dtd= ''' '''
 		
 		# takes table
 		self.html_format = '''<html><head>
@@ -204,13 +192,17 @@ class SodsTable:
 		''' load cells from text in xml format '''
 		
 		# get the cells elements from our xml file
-		cells = ElementTree.XML(xml_text)
+		xml_table = ElementTree.XML(xml_text)
 		
 		# loop on all the cells in xml file
-		for xml_cell in cells:
+		for xml_cell in xml_table:
+			# FIXME: we assume that all the cell element are in the right
+			# order
+			
+			# get i, j
 			i, j = int(xml_cell[0].text), int(xml_cell[1].text)
 			
-			# set cell
+			# get cell
 			c = SodsCell()
 			
 			c.color = xml_cell[2].text
@@ -245,10 +237,21 @@ class SodsTable:
 
 if __name__ == "__main__":
 	
+	t = SodsTable()
+	
+	t.setAt(1,1, text = "hello world")
+	t.setAt(1,range(1,3), background_color = "#00ff00")
+	
+	print "Test table export:"
+	print "------------------------------"
+	
+	file("test.xml","w").write(t.exportXml(6,6))
+	file("test.html","w").write(t.exportHtml(6,6))
+	
 	print "Test table xml load from file:"
-	print "-----------------------"
+	print "------------------------------"
 	
 	t2 = SodsTable()
 	t2.loadXml(file("test.xml").read())
-	print t2.exportXml(6,6)
+	file("test2.xml","w").write(t2.exportXml(6,6))
 	
