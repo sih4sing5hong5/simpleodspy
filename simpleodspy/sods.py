@@ -18,6 +18,12 @@
 # Copyright (C) 2010 Yaacov Zamir (2010) <kzamir@walla.co.il>
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
+from odf.opendocument import OpenDocumentSpreadsheet
+from odf.table import Table, TableRow, TableCell
+from odf.style import Style, TextProperties, TableCellProperties, Map
+from odf.text import P
+
+
 from sodsspreadsheet import SodsSpreadSheet
 
 class Sods(SodsSpreadSheet):
@@ -66,13 +72,26 @@ class Sods(SodsSpreadSheet):
 	def saveOds(self, filename, i_range, j_range):
 		''' save table in ods format '''
 		
+		odfdoc = OpenDocumentSpreadsheet()
+		table = Table()
+		
 		# make sure values are up to date
 		# loop and update the cells value
 		for i in range(1, i_range):
+			tr = TableRow()
+			table.addElement(tr)
+
 			for j in range(1, j_range):
 				cell = self.encodeColName(j) + str(i)
 				self.updateOneCell(cell)
-		
+				c = self.getCellAt(i, j)
+				
+				tc = TableCell()
+				tc.addElement(P(text = c.text))
+				tr.addElement(tc)
+
+		odfdoc.spreadsheet.addElement(table)
+		odfdoc.save(filename)
 		
 if __name__ == "__main__":
 	
@@ -97,4 +116,5 @@ if __name__ == "__main__":
 	t.setCell("D2:D3", condition = "value()<=200")
 	
 	t.saveHtml("test.html", 16,16)
+	t.saveOds("test.ods", 16,16)
 	
