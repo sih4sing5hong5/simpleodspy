@@ -73,7 +73,7 @@ class SodsCell:
 </td>'''.format(color, self.font_family, font_size,
 				background_color, 
 				border_top, border_bottom, border_left, border_right,
-				self.text)
+				self.text + "&nbsp;")
 		
 		return out
 	
