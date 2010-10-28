@@ -28,10 +28,10 @@ from sodscell import SodsCell
 from sodsspreadsheet import SodsSpreadSheet
 
 class Sods(SodsSpreadSheet):
-	def __init__(self):
+	def __init__(self, i_max = 30, j_max = 30):
 		''' init and set default values for spreadsheet elements '''
 		
-		SodsSpreadSheet.__init__(self)
+		SodsSpreadSheet.__init__(self, i_max, j_max)
 	
 	def saveOds(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''

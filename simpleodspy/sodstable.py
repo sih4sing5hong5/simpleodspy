@@ -20,6 +20,7 @@
 
 from copy import deepcopy
 from xml.etree import ElementTree
+from xml.sax.saxutils import unescape
 
 from sodscell import SodsCell
 
@@ -223,13 +224,13 @@ class SodsTable:
 			c.border_right = xml_cell[9].text
 	
 			if xml_cell[10].text:
-				c.text = xml_cell[10].text
+				c.text = unescape(xml_cell[10].text)
 			c.value_type = xml_cell[11].text
-			c.value = [None, xml_cell[12].text][xml_cell[12].text == 'None']
-			c.formula = [None, xml_cell[13].text][xml_cell[13].text == 'None']
-			c.date_value = [None, xml_cell[14].text][xml_cell[14].text == 'None']
+			c.value = [None, xml_cell[12].text][xml_cell[12].text != 'None']
+			c.formula = [None, unescape(xml_cell[13].text)][xml_cell[13].text != 'None']
+			c.date_value = [None, xml_cell[14].text][xml_cell[14].text != 'None']
 	
-			c.condition = [None, xml_cell[15].text][xml_cell[15].text == 'None']
+			c.condition = [None, unescape(xml_cell[15].text)][xml_cell[15].text != 'None']
 			c.condition_state = eval(xml_cell[16].text)
 			c.condition_color = xml_cell[17].text
 			c.condition_background_color = xml_cell[18].text

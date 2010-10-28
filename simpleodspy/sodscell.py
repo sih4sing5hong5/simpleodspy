@@ -18,6 +18,8 @@
 # Copyright (C) 2010 Yaacov Zamir (2010) <kzamir@walla.co.il>
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
+from xml.sax.saxutils import escape
+
 class SodsCell:
 	def __init__(self):
 		''' init and set default values for cell elements '''
@@ -73,12 +75,23 @@ class SodsCell:
 </td>'''.format(color, self.font_family, font_size,
 				background_color, 
 				border_top, border_bottom, border_left, border_right,
-				self.text + "&nbsp;")
+				escape(self.text) + "&nbsp;")
 		
 		return out
 	
 	def exportXml(self, i = 0, j = 0):
 		''' export cell data as xml table cell '''
+		
+		text = escape(self.text)
+		
+		if self.formula:
+			formula = escape(self.formula)
+		else:
+			formula = 'None'
+		if self.condition:
+			condition = escape(self.condition)
+		else:
+			condition = 'None'
 		
 		# create cell string
 		out = '''
@@ -111,9 +124,9 @@ class SodsCell:
 				self.background_color, 
 				self.border_top, self.border_bottom, 
 				self.border_left, self.border_right,
-				self.text, self.value_type, self.value, 
-				self.formula, self.date_value, 
-				self.condition, self.condition_state, 
+				text, self.value_type, self.value, 
+				formula, self.date_value, 
+				condition, self.condition_state, 
 				self.condition_color, self.condition_background_color)
 		
 		return out

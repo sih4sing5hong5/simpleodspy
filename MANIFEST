@@ -1,0 +1,10 @@
+README
+COPYING
+MANIFEST
+setup.py
+simpleodspy/__init__.py
+simpleodspy/sods.py
+simpleodspy/sodscell.py
+simpleodspy/sodsspreadsheet.py
+simpleodspy/sodstable.py
+examples/hello_world.py

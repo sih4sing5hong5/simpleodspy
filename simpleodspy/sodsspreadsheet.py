@@ -24,10 +24,10 @@ from datetime import datetime
 from sodstable import SodsTable
 
 class SodsSpreadSheet(SodsTable):
-	def __init__(self):
+	def __init__(self, i_max = 30, j_max = 30):
 		''' init and set default values for spreadsheet elements '''
 		
-		SodsTable.__init__(self)
+		SodsTable.__init__(self, i_max, j_max)
 		
 	def parseColName(self, name):
 		''' parse a col name "A" or "BC" to the col number 1.. '''
@@ -216,6 +216,11 @@ class SodsSpreadSheet(SodsTable):
 		# get the re.group string
 		name = name.group(0)
 		
+		return self.getOneCellNameValue(name)
+	
+	def getOneCellNameValue(self, name):
+		''' return the updated float value of a cell '''
+		
 		# parse i,j from cell name
 		i, j = self.parseCellName(name)
 		
@@ -236,7 +241,7 @@ class SodsSpreadSheet(SodsTable):
 		c = self.getCellAt(i, j)
 		
 		return str(c.value)
-	
+		
 	def updateOneCell(self, name):
 		''' update one cell text '''
 		
@@ -255,15 +260,23 @@ class SodsSpreadSheet(SodsTable):
 				self.getRangeString, formula)
 		
 			# get all the cell names in this formula and replace them with values
-			value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValue, formula))
-		
+			try:
+				value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValue, formula))
+			except:
+				print formula
+				exit()
+				
 			# update cell value and text string
 			c.value = value
 			c.text = str(value)
 			
 		# check if the cell has condition
 		if c.condition:
-			# replace the value() function with the cells value
+			# replace the cell-content() function with the cells value
+			if (c.value):
+				value = c.value
+			else:
+				value = self.getOneCellNameValue(name)
 			formula = c.condition.replace("cell-content()", str(value))
 		
 			# check for ranges e.g. 'A2:G3' and replace them with (A2,A3 ... G3) tupple
@@ -316,7 +329,7 @@ class SodsSpreadSheet(SodsTable):
 		else:
 			file(filename,"w").write(self.exportXml(i_max, j_max))
 	
-	def loadXml(self, filename):
+	def loadXmlfile(self, filename):
 		''' load a table from file '''
 		
 		self.loadXml(file(filename).read())

@@ -9,6 +9,6 @@ setup(name='simpleodspy',
       author='Yaacov Zamir',
       author_email='kzamir@walla.co.il',
       url='http://simple-odspy.sourceforge.net/',
-      packages=['simpleodspy'],
+      packages=['simpleodspy']
      )
      
