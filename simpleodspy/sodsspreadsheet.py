@@ -264,7 +264,7 @@ class SodsSpreadSheet(SodsTable):
 		# check if the cell has condition
 		if c.condition:
 			# replace the value() function with the cells value
-			formula = c.condition.replace("value()", str(value))
+			formula = c.condition.replace("cell-content()", str(value))
 		
 			# check for ranges e.g. 'A2:G3' and replace them with (A2,A3 ... G3) tupple
 			formula = re.sub('[A-Z]+[0-9]+:[A-Z]+[0-9]+', 

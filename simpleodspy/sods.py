@@ -19,8 +19,9 @@
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
 from odf.opendocument import OpenDocumentSpreadsheet
-from odf.table import Table, TableRow, TableCell
-from odf.style import Style, TextProperties, TableCellProperties, Map
+from odf.table import Table, TableColumn, TableRow, TableCell
+from odf.style import Style, TextProperties, TableCellProperties, TableColumnProperties, Map
+from odf.number import NumberStyle, CurrencyStyle, TextStyle, Number,  Text
 from odf.text import P
 
 from sodsspreadsheet import SodsSpreadSheet
@@ -34,14 +35,23 @@ class Sods(SodsSpreadSheet):
 	def saveOds(self, filename, i_range, j_range):
 		''' save table in ods format '''
 		
+		# create new odf spreadsheet
 		odfdoc = OpenDocumentSpreadsheet()
 		table = Table()
 		
-		# regular style
-		rs = Style(name="content", family="table-cell")
-		rs.addElement(TextProperties(fontfamily="sans-serif", fontsize="12pt"))
-		odfdoc.styles.addElement(rs)
+		# default style
+		ts = Style(name="ts", family="table-cell")
+		ts.addElement(TextProperties(fontfamily="sans-serif", fontsize="12pt"))
+		odfdoc.styles.addElement(ts)
+		
+		cs = Style(name="cs", family="table-column")
+		cs.addElement(TableColumnProperties(columnwidth="2.8cm", breakbefore="auto"))
+		odfdoc.automaticstyles.addElement(cs)
 
+		# create columns
+		for j in range(1, j_range):
+			table.addElement(TableColumn(stylename="cs", defaultcellstylename="ts"))
+			
 		# make sure values are up to date
 		# loop and update the cells value
 		for i in range(1, i_range):
@@ -64,30 +74,33 @@ class Sods(SodsSpreadSheet):
 					borderbottom = c.border_bottom,
 					borderleft = c.border_left,
 					borderright = c.border_right))
-				
+					
 				# set ods conditional style
 				if (c.condition):
-					ccs_name = "c_" + cell
-					ccs = Style(name = ccs_name, family = 'table-cell')
-					ccs.addElement(TextProperties(color = c.condition_color))
-					ccs.addElement(TableCellProperties(backgroundcolor = c.condition_background_color))
-					odfdoc.automaticstyles.addElement(ccs)
+					cns = Style(name = "cns"+cell, family = 'table-cell')
+					cns.addElement(TextProperties(color = c.condition_color))
+					cns.addElement(TableCellProperties(backgroundcolor = c.condition_background_color))
+					odfdoc.styles.addElement(cns)
 					
-					cs.addElement(Map(condition = c.condition, applystylename = ccs_name))
-					
-				# add style to document
+					cs.addElement(Map(condition = c.condition, applystylename = "cns"+cell))
+				
 				odfdoc.automaticstyles.addElement(cs)
 				
 				# create new ods cell
 				if (c.formula):
 					tc = TableCell(valuetype = c.value_type, 
-						formula = c.formula, datevalue = c.date_value, stylename = cell)
-				else:
+						formula = c.formula, value = c.value, stylename = cell)
+				elif (c.value_type == 'date'):
 					tc = TableCell(valuetype = c.value_type, 
-						value = c.value, datevalue = c.date_value, stylename = cell)
+						datevalue = c.date_value, stylename = cell)
+				elif (c.value_type == 'float'):
+					tc = TableCell(valuetype = c.value_type, 
+						value = c.value, stylename = cell)
+				else:
+					tc = TableCell(valuetype = c.value_type, stylename = cell)
 				
 				# set ods text
-				if (c.value_type == 'string'):
+				if (tc and c.value_type == 'string'):
 					tc.addElement(P(text = c.text))
 				
 				tr.addElement(tc)
@@ -115,8 +128,8 @@ if __name__ == "__main__":
 	t.setValue("C3", "Sum of cells:")
 	t.setValue("D3", "=sum(A2:D2)")
 	
-	t.setCell("D2:D3", condition = "value()<=200")
-	t.setCell("D2:D3", condition_background_color = "#ff0000")
+	t.setCell("D2:D3", condition = "cell-content()<=200")
+	t.setCell("D2:D3", condition_color = "#ff0000")
 	
 	t.saveHtml("test.html", 16,16)
 	t.saveOds("test.ods", 16,16)
