@@ -194,8 +194,6 @@ class SodsSpreadSheet(SodsTable):
 			condition, condition_state,
 			condition_color, condition_background_color)
 		
-		return
-	
 	def getRangeString(self, cells):
 		''' create a string of cells from range '''
 		
@@ -280,8 +278,6 @@ class SodsSpreadSheet(SodsTable):
 		
 		self.setCellAt(i, j, c)
 		
-		return
-	
 	def updateCell(self, name):
 		''' update cell text value '''
 		
@@ -301,8 +297,43 @@ class SodsSpreadSheet(SodsTable):
 				cell = self.encodeColName(j) + str(i)
 				self.updateOneCell(cell)
 		
-		return
+	def saveXml(self, filename, i_range, j_range):
+		''' save table in xml format '''
+		
+		# make sure values are up to date
+		# loop and update the cells value
+		for i in range(1, i_range):
+			for j in range(1, j_range):
+				cell = self.encodeColName(j) + str(i)
+				self.updateOneCell(cell)
+		
+		# if filename is - print to stdout
+		if filename == '-':
+			print self.exportXml(i_range, j_range)
+		else:
+			file(filename,"w").write(self.exportXml(i_range, j_range))
 	
+	def loadXml(self, filename):
+		''' load a table from file '''
+		
+		self.loadXml(file(filename).read())
+		
+	def saveHtml(self, filename, i_range, j_range):
+		''' save table in xml format '''
+		
+		# make sure values are up to date
+		# loop and update the cells value
+		for i in range(1, i_range):
+			for j in range(1, j_range):
+				cell = self.encodeColName(j) + str(i)
+				self.updateOneCell(cell)
+		
+		# if filename is - print to stdout
+		if filename == '-':
+			print self.exportHtml(i_range, j_range)
+		else:
+			file(filename,"w").write(self.exportHtml(i_range, j_range))
+		
 if __name__ == "__main__":
 	
 	t = SodsSpreadSheet()
@@ -324,8 +355,9 @@ if __name__ == "__main__":
 	t.setValue("D3", "=sum(A2:D2)")
 	
 	t.setCell("D2:D3", condition = "value()<=200")
+	t.setCell("D2:D3", condition_background_color = "#ff0000")
 	
 	t.updateCell("A1:G3")
 	
-	file("test.html","w").write(t.exportHtml(16,16)) 
+	t.saveHtml("test.html", 16,16) 
 	

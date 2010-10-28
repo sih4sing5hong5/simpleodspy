@@ -23,7 +23,6 @@ from odf.table import Table, TableRow, TableCell
 from odf.style import Style, TextProperties, TableCellProperties, Map
 from odf.text import P
 
-
 from sodsspreadsheet import SodsSpreadSheet
 
 class Sods(SodsSpreadSheet):
@@ -32,62 +31,65 @@ class Sods(SodsSpreadSheet):
 		
 		SodsSpreadSheet.__init__(self)
 	
-	def saveXml(self, filename, i_range, j_range):
-		''' save table in xml format '''
-		
-		# make sure values are up to date
-		# loop and update the cells value
-		for i in range(1, i_range):
-			for j in range(1, j_range):
-				cell = self.encodeColName(j) + str(i)
-				self.updateOneCell(cell)
-		
-		# if filename is - print to stdout
-		if filename == '-':
-			print t.exportXml(i_range, j_range)
-		else:
-			file(filename,"w").write(t.exportXml(i_range, j_range))
-	
-	def loadXml(self, filename):
-		''' load a table from file '''
-		
-		self.loadXml(file(filename).read())
-		
-	def saveHtml(self, filename, i_range, j_range):
-		''' save table in xml format '''
-		
-		# make sure values are up to date
-		# loop and update the cells value
-		for i in range(1, i_range):
-			for j in range(1, j_range):
-				cell = self.encodeColName(j) + str(i)
-				self.updateOneCell(cell)
-		
-		# if filename is - print to stdout
-		if filename == '-':
-			print t.exportHtml(i_range, j_range)
-		else:
-			file(filename,"w").write(t.exportHtml(i_range, j_range))
-	
 	def saveOds(self, filename, i_range, j_range):
 		''' save table in ods format '''
 		
 		odfdoc = OpenDocumentSpreadsheet()
 		table = Table()
 		
+		# regular style
+		rs = Style(name="content", family="table-cell")
+		rs.addElement(TextProperties(fontfamily="sans-serif", fontsize="12pt"))
+		odfdoc.styles.addElement(rs)
+
 		# make sure values are up to date
 		# loop and update the cells value
 		for i in range(1, i_range):
+			# create new ods row
 			tr = TableRow()
 			table.addElement(tr)
 
 			for j in range(1, j_range):
+				# update the cell text and condition
 				cell = self.encodeColName(j) + str(i)
 				self.updateOneCell(cell)
 				c = self.getCellAt(i, j)
 				
-				tc = TableCell()
-				tc.addElement(P(text = c.text))
+				# set ods style
+				cs = Style(name = cell, family = 'table-cell')
+				cs.addElement(TextProperties(color = c.color, 
+					fontsize =c.font_size, fontfamily = c.font_family))
+				cs.addElement(TableCellProperties(backgroundcolor = c.background_color,
+					bordertop = c.border_top,
+					borderbottom = c.border_bottom,
+					borderleft = c.border_left,
+					borderright = c.border_right))
+				
+				# set ods conditional style
+				if (c.condition):
+					ccs_name = "c_" + cell
+					ccs = Style(name = ccs_name, family = 'table-cell')
+					ccs.addElement(TextProperties(color = c.condition_color))
+					ccs.addElement(TableCellProperties(backgroundcolor = c.condition_background_color))
+					odfdoc.automaticstyles.addElement(ccs)
+					
+					cs.addElement(Map(condition = c.condition, applystylename = ccs_name))
+					
+				# add style to document
+				odfdoc.automaticstyles.addElement(cs)
+				
+				# create new ods cell
+				if (c.formula):
+					tc = TableCell(valuetype = c.value_type, 
+						formula = c.formula, datevalue = c.date_value, stylename = cell)
+				else:
+					tc = TableCell(valuetype = c.value_type, 
+						value = c.value, datevalue = c.date_value, stylename = cell)
+				
+				# set ods text
+				if (c.value_type == 'string'):
+					tc.addElement(P(text = c.text))
+				
 				tr.addElement(tc)
 
 		odfdoc.spreadsheet.addElement(table)
@@ -106,7 +108,7 @@ if __name__ == "__main__":
 	
 	t.setValue("A2", 123.4)
 	t.setValue("B2", "2010-01-01")
-	t.setValue("C2", "0.6")
+	t.setValue("C2", "=0.6")
 	t.setValue("D2", "= A2 + 3")
 	
 	t.setCell("A3:D3", border_top = "1pt solid #ff0000")
@@ -114,6 +116,7 @@ if __name__ == "__main__":
 	t.setValue("D3", "=sum(A2:D2)")
 	
 	t.setCell("D2:D3", condition = "value()<=200")
+	t.setCell("D2:D3", condition_background_color = "#ff0000")
 	
 	t.saveHtml("test.html", 16,16)
 	t.saveOds("test.ods", 16,16)

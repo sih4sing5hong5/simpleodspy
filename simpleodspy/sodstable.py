@@ -72,8 +72,6 @@ class SodsTable:
 			if len(row) < 1:
 				del self.rows[i]
 		
-		return
-	
 	def setAt(self, i_range, j_range, 
 			font_size = None, font_family = None, color = None, 
 			background_color = None, border_top = None,
@@ -102,8 +100,6 @@ class SodsTable:
 					text, value_type, value, formula, date_value,
 					condition, condition_state,
 					condition_color, condition_background_color)
-				
-		return
 		
 	def setAtOneCell(self, i, j, 
 			font_size = None, font_family = None, color = None, 
@@ -125,9 +121,13 @@ class SodsTable:
 			c.font_family = font_family
 		if color:
 			c.color = color
-	
+			if not condition:
+				c.condition_color = color
+				
 		if background_color:
 			c.background_color = background_color
+			if not condition:
+				c.condition_background_color = background_color
 		if border_top:
 			c.border_top = border_top
 		if border_bottom:
@@ -160,8 +160,6 @@ class SodsTable:
 		# return cell to table
 		self.setCellAt(i, j, c)
 		
-		return
-	
 	def exportHtml(self, i_max, j_max):
 		''' export table in html format '''
 		

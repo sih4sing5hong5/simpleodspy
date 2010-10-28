@@ -44,8 +44,8 @@ class SodsCell:
 		# Map
 		self.condition = None
 		self.condition_state = False
-		self.condition_color = "#0000ff"
-		self.condition_background_color = "#ff9999"
+		self.condition_color = "#000000"
+		self.condition_background_color = "#ffffff"
 		
 	def exportHtml(self, i = 0, j = 0):
 		''' export cell data as html table cell '''
