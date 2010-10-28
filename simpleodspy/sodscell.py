@@ -23,7 +23,7 @@ class SodsCell:
 		''' init and set default values for cell elements '''
 		
 		# TextProperties
-		self.font_size = "12pt"
+		self.font_size = "11pt"
 		self.font_family = "sans-serif"
 		self.color = "#000000"
 		

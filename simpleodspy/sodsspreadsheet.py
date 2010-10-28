@@ -297,42 +297,48 @@ class SodsSpreadSheet(SodsTable):
 				cell = self.encodeColName(j) + str(i)
 				self.updateOneCell(cell)
 		
-	def saveXml(self, filename, i_range, j_range):
+	def saveXml(self, filename, i_max = None, j_max = None):
 		''' save table in xml format '''
+		
+		if not i_max: i_max = self.i_max
+		if not j_max: j_max = self.j_max
 		
 		# make sure values are up to date
 		# loop and update the cells value
-		for i in range(1, i_range):
-			for j in range(1, j_range):
+		for i in range(1, i_max):
+			for j in range(1, j_max):
 				cell = self.encodeColName(j) + str(i)
 				self.updateOneCell(cell)
 		
 		# if filename is - print to stdout
 		if filename == '-':
-			print self.exportXml(i_range, j_range)
+			print self.exportXml(i_max, j_max)
 		else:
-			file(filename,"w").write(self.exportXml(i_range, j_range))
+			file(filename,"w").write(self.exportXml(i_max, j_max))
 	
 	def loadXml(self, filename):
 		''' load a table from file '''
 		
 		self.loadXml(file(filename).read())
 		
-	def saveHtml(self, filename, i_range, j_range):
+	def saveHtml(self, filename, i_max = None, j_max = None):
 		''' save table in xml format '''
+		
+		if not i_max: i_max = self.i_max
+		if not j_max: j_max = self.j_max
 		
 		# make sure values are up to date
 		# loop and update the cells value
-		for i in range(1, i_range):
-			for j in range(1, j_range):
+		for i in range(1, i_max):
+			for j in range(1, j_max):
 				cell = self.encodeColName(j) + str(i)
 				self.updateOneCell(cell)
 		
 		# if filename is - print to stdout
 		if filename == '-':
-			print self.exportHtml(i_range, j_range)
+			print self.exportHtml(i_max, j_max)
 		else:
-			file(filename,"w").write(self.exportHtml(i_range, j_range))
+			file(filename,"w").write(self.exportHtml(i_max, j_max))
 		
 if __name__ == "__main__":
 	
@@ -354,10 +360,10 @@ if __name__ == "__main__":
 	t.setValue("C3", "Sum of cells:")
 	t.setValue("D3", "=sum(A2:D2)")
 	
-	t.setCell("D2:D3", condition = "value()<=200")
+	t.setCell("D2:D3", condition = "cell-content()<=200")
 	t.setCell("D2:D3", condition_background_color = "#ff0000")
 	
 	t.updateCell("A1:G3")
 	
-	t.saveHtml("test.html", 16,16) 
+	t.saveHtml("test.html") 
 	

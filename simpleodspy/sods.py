@@ -24,6 +24,7 @@ from odf.style import Style, TextProperties, TableCellProperties, TableColumnPro
 from odf.number import NumberStyle, CurrencyStyle, TextStyle, Number,  Text
 from odf.text import P
 
+from sodscell import SodsCell
 from sodsspreadsheet import SodsSpreadSheet
 
 class Sods(SodsSpreadSheet):
@@ -32,34 +33,37 @@ class Sods(SodsSpreadSheet):
 		
 		SodsSpreadSheet.__init__(self)
 	
-	def saveOds(self, filename, i_range, j_range):
+	def saveOds(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''
+		
+		if not i_max: i_max = self.i_max
+		if not j_max: j_max = self.j_max
 		
 		# create new odf spreadsheet
 		odfdoc = OpenDocumentSpreadsheet()
 		table = Table()
 		
 		# default style
-		ts = Style(name="ts", family="table-cell")
-		ts.addElement(TextProperties(fontfamily="sans-serif", fontsize="12pt"))
+		ts = Style(name = "ts", family = "table-cell")
+		ts.addElement(TextProperties(fontfamily = SodsCell().font_family, fontsize = SodsCell().font_size))
 		odfdoc.styles.addElement(ts)
 		
-		cs = Style(name="cs", family="table-column")
-		cs.addElement(TableColumnProperties(columnwidth="2.8cm", breakbefore="auto"))
+		cs = Style(name = "cs", family = "table-column")
+		cs.addElement(TableColumnProperties(columnwidth = "2.4cm", breakbefore = "auto"))
 		odfdoc.automaticstyles.addElement(cs)
 
 		# create columns
-		for j in range(1, j_range):
-			table.addElement(TableColumn(stylename="cs", defaultcellstylename="ts"))
+		for j in range(1, j_max):
+			table.addElement(TableColumn(stylename = "cs", defaultcellstylename = "ts"))
 			
 		# make sure values are up to date
 		# loop and update the cells value
-		for i in range(1, i_range):
+		for i in range(1, i_max):
 			# create new ods row
 			tr = TableRow()
 			table.addElement(tr)
 
-			for j in range(1, j_range):
+			for j in range(1, j_max):
 				# update the cell text and condition
 				cell = self.encodeColName(j) + str(i)
 				self.updateOneCell(cell)
@@ -132,5 +136,5 @@ if __name__ == "__main__":
 	t.setCell("D2:D3", condition_color = "#ff0000")
 	
 	t.saveHtml("test.html", 16,16)
-	t.saveOds("test.ods", 16,16)
+	t.saveOds("test.ods")
 	

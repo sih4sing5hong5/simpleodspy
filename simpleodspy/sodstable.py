@@ -24,11 +24,14 @@ from xml.etree import ElementTree
 from sodscell import SodsCell
 
 class SodsTable:
-	def __init__(self):
+	def __init__(self, i_max = 30, j_max = 30):
 		''' init and set default values for table elements '''
 		
 		# the data table
 		self.rows = {}
+		
+		self.i_max = i_max
+		self.j_max = j_max
 		
 		# dtd for the xml import/export
 		# TODO: add dtd or scheme
@@ -160,8 +163,11 @@ class SodsTable:
 		# return cell to table
 		self.setCellAt(i, j, c)
 		
-	def exportHtml(self, i_max, j_max):
+	def exportHtml(self, i_max = None, j_max = None):
 		''' export table in html format '''
+		
+		if not i_max: i_max = self.i_max
+		if not j_max: j_max = self.j_max
 		
 		# create the table element of the html page
 		out = "<table>\n"
@@ -175,8 +181,11 @@ class SodsTable:
 		
 		return self.html_format % out
 		
-	def exportXml(self, i_max, j_max):
+	def exportXml(self, i_max = None, j_max = None):
 		''' export table in xml format '''
+		
+		if not i_max: i_max = self.i_max
+		if not j_max: j_max = self.j_max
 		
 		out = ""
 		
@@ -243,8 +252,8 @@ if __name__ == "__main__":
 	print "Test table export:"
 	print "------------------------------"
 	
-	file("test.xml","w").write(t.exportXml(6,6))
-	file("test.html","w").write(t.exportHtml(6,6))
+	file("test.xml","w").write(t.exportXml())
+	file("test.html","w").write(t.exportHtml())
 	
 	print "Test table xml load from file:"
 	print "------------------------------"
