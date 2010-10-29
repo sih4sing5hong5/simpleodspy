@@ -19,6 +19,7 @@
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
 import re
+import math
 from datetime import datetime
 
 from sodstable import SodsTable
@@ -209,16 +210,16 @@ class SodsSpreadSheet(SodsTable):
 		# return the sum as string
 		return out
 	
-	def getOneCellValue(self, name):
-		''' return the updated float value of a cell '''
+	def getOneCellValueRe(self, name):
+		''' return the updated float value of a cell input name is re group '''
 		
 		# we work with a string, 
 		# get the re.group string
 		name = name.group(0)
 		
-		return self.getOneCellNameValue(name)
+		return self.getOneCellValue(name)
 	
-	def getOneCellNameValue(self, name):
+	def getOneCellValue(self, name):
 		''' return the updated float value of a cell '''
 		
 		# parse i,j from cell name
@@ -254,14 +255,39 @@ class SodsSpreadSheet(SodsTable):
 		if c.formula:
 			# remove the '='
 			formula = c.formula[1:]
-		
+			
+			# remove white spaces
+			formula = re.sub(r'\s', '', formula)
+			formula = formula.replace('!', '')
+			formula = formula.replace(';', '')
+			formula = formula.replace('$', '')
+			formula = formula.replace('import', '')
+			formula = formula.replace('print', '')
+			
+			# replce spreadsheet function names to python function
+			formula = formula.replace('SUM(', 'sum(')
+			formula = formula.replace('MIN(', 'min(')
+			formula = formula.replace('MAX(', 'max(')
+			formula = formula.replace('ABS(', 'abs(')
+			
+			formula = formula.replace('POWER(', 'math.pow(')
+			formula = formula.replace('SQRT(', 'math.sqrt(')
+			
+			formula = formula.replace('PI', 'math.pi')
+			formula = formula.replace('SIN(', 'math.sin(')
+			formula = formula.replace('COS(', 'math.cos(')
+			formula = formula.replace('TAN(', 'math.cos(')
+			formula = formula.replace('ASIN(', 'math.asin(')
+			formula = formula.replace('ACOS(', 'math.acos(')
+			formula = formula.replace('ATAN(', 'math.atan(')
+			
 			# check for ranges e.g. 'A2:G3' and replace them with (A2,A3 ... G3) tupple
 			formula = re.sub('[A-Z]+[0-9]+:[A-Z]+[0-9]+', 
 				self.getRangeString, formula)
 		
 			# get all the cell names in this formula and replace them with values
 			try:
-				value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValue, formula))
+				value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValueRe, formula))
 			except:
 				print formula
 				exit()
@@ -276,7 +302,7 @@ class SodsSpreadSheet(SodsTable):
 			if (c.value):
 				value = c.value
 			else:
-				value = self.getOneCellNameValue(name)
+				value = self.getOneCellValue(name)
 			formula = c.condition.replace("cell-content()", str(value))
 		
 			# check for ranges e.g. 'A2:G3' and replace them with (A2,A3 ... G3) tupple
@@ -284,7 +310,7 @@ class SodsSpreadSheet(SodsTable):
 				self.getRangeString, formula)
 		
 			# get all the cell names in this formula and replace them with values
-			value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValue, formula))
+			value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValueRe, formula))
 		
 			# update condition state
 			c.condition_state = value
@@ -367,11 +393,11 @@ if __name__ == "__main__":
 	t.setValue("A2", 123.4)
 	t.setValue("B2", "2010-01-01")
 	t.setValue("C2", "0.6")
-	t.setValue("D2", "= A2 + 3")
+	t.setValue("D2", "= A$2 + 3")
 	
 	t.setCell("A3:D3", border_top = "1pt solid #ff0000")
 	t.setValue("C3", "Sum of cells:")
-	t.setValue("D3", "=sum(A2:D2)")
+	t.setValue("D3", "=SUM($A$2:D2)")
 	
 	t.setCell("D2:D3", condition = "cell-content()<=200")
 	t.setCell("D2:D3", condition_background_color = "#ff0000")
