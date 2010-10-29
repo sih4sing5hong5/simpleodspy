@@ -393,7 +393,7 @@ if __name__ == "__main__":
 	t.setValue("A2", 123.4)
 	t.setValue("B2", "2010-01-01")
 	t.setValue("C2", "0.6")
-	t.setValue("D2", "= A$2 + 3")
+	t.setValue("D2", "= SIN(PI/2)")
 	
 	t.setCell("A3:D3", border_top = "1pt solid #ff0000")
 	t.setValue("C3", "Sum of cells:")
