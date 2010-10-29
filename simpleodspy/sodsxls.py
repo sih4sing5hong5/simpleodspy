@@ -20,7 +20,6 @@
 
 from xlwt import *
 
-from sodscell import SodsCell
 from sods import Sods
 
 class SodsXls(Sods):
@@ -29,6 +28,12 @@ class SodsXls(Sods):
 		
 		Sods.__init__(self, i_max, j_max)
 	
+	def convertXlsBorderWidth(self, border):
+		return [Borders.NO_LINE, Borders.THIN][border != 'none']
+	
+	def convertXlsBorderColor(self, border):
+		return 0
+		
 	def convertXlsColor(self, color):
 		return 1
 		
@@ -39,7 +44,7 @@ class SodsXls(Sods):
 		if not j_max: j_max = self.j_max
 		
 		# create new xls spreadsheet
-		w = Workbook()
+		w = Workbook(encoding='utf-8')
 		ws = w.add_sheet("sheet 1")
 		
 		# make sure values are up to date
@@ -58,14 +63,14 @@ class SodsXls(Sods):
 				fnt.colour_index = 0x0000 #self.convertXlsColor(c.color)
 				
 				borders = Borders()
-				borders.left = [Borders.NO_LINE, Borders.THIN][c.border_left != 'none']
-				borders.left_colour = 0
-				borders.right = [Borders.NO_LINE, Borders.THIN][c.border_right != 'none']
-				borders.right_colour = 0
-				borders.top = [Borders.NO_LINE, Borders.THIN][c.border_top != 'none']
-				borders.top_colour = 0
-				borders.bottom = [Borders.NO_LINE, Borders.THIN][c.border_bottom != 'none']
-				borders.bottom_colour = 0
+				borders.left = self.convertXlsBorderWidth(c.border_left)
+				borders.left_colour = self.convertXlsBorderColor(c.border_left)
+				borders.right = self.convertXlsBorderWidth(c.border_right)
+				borders.right_colour = self.convertXlsBorderColor(c.border_right)
+				borders.top = self.convertXlsBorderWidth(c.border_top)
+				borders.top_colour = self.convertXlsBorderColor(c.border_top)
+				borders.bottom = self.convertXlsBorderWidth(c.border_bottom)
+				borders.bottom_colour = self.convertXlsBorderColor(c.border_bottom)
 				
 				pattern = Pattern()
 				pattern.pattern = Pattern.SOLID_PATTERN

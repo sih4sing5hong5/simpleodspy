@@ -286,12 +286,8 @@ class SodsSpreadSheet(SodsTable):
 				self.getRangeString, formula)
 		
 			# get all the cell names in this formula and replace them with values
-			try:
-				value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValueRe, formula))
-			except:
-				print formula
-				exit()
-				
+			value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValueRe, formula))
+			
 			# update cell value and text string
 			c.value = value
 			c.text = str(value)
