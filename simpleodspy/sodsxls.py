@@ -209,4 +209,5 @@ if __name__ == "__main__":
 	
 	t.saveHtml("test.html", 16,16)
 	t.saveXls("test.xls")
+	t.saveCsv("test.csv")
 	
