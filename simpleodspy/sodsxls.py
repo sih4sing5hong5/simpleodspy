@@ -148,8 +148,8 @@ class SodsXls(Sods):
 				
 				# FIXME: excel output does not support conditional formating,
 				# we do fixed formating of the conditional formating
-				color = [self.color, self.condition_color][self.condition_state]
-				background_color = [self.background_color, self.condition_background_color][self.condition_state]
+				color = [c.color, c.condition_color][c.condition_state]
+				background_color = [c.background_color, c.condition_background_color][c.condition_state]
 				
 				# set xls style
 				fnt = Font()
