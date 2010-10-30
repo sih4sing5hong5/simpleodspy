@@ -18,6 +18,7 @@
 # Copyright (C) 2010 Yaacov Zamir (2010) <kzamir@walla.co.il>
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
+import re
 from xlwt import *
 
 from sods import Sods
@@ -28,14 +29,103 @@ class SodsXls(Sods):
 		
 		Sods.__init__(self, i_max, j_max)
 	
+	def convertXlsFamiliy(self, font_family):
+		''' return the font family name '''
+		
+		return 'Arial'
+		
 	def convertXlsBorderWidth(self, border):
-		return [Borders.NO_LINE, Borders.THIN][border != 'none']
+		''' return the xls border width index '''
+		
+		# find the width in pt
+		try:
+			width = eval(re.search('(.+)pt', border).group(1))
+		except:
+			return Borders.NO_LINE
+			
+		# conver to excel widths
+		if width > 2: xlsborder = Borders.THICK
+		elif width == 2: xlsborder = Borders.MEDIUM
+		elif width == 1: xlsborder = Borders.THIN
+		else: xlsborder = Borders.NO_LINE
+		
+		return xlsborder
 	
 	def convertXlsBorderColor(self, border):
-		return 0
+		''' return the xls border color index '''
 		
-	def convertXlsColor(self, color):
-		return 1
+		return self.convertXlsColor(border)
+		
+	def convertXlsColor(self, color_str):
+		''' return the xls color index '''
+		
+		#find color #rgb in string
+		try:
+			color = eval("0x" + re.search('#(......)', color_str).group(1))
+		except:
+			return 0
+		
+		# convert color
+		xlscolor = 0
+		
+		if color <= 0x000000: xlscolor = 1
+		elif color <= 0x000080: xlscolor = 11
+		elif color <= 0x000080: xlscolor = 25
+		elif color <= 0x0000FF: xlscolor = 5
+		elif color <= 0x0000FF: xlscolor = 32
+		elif color <= 0x003300: xlscolor = 51
+		elif color <= 0x003366: xlscolor = 49
+		elif color <= 0x0066CC: xlscolor = 23
+		elif color <= 0x008000: xlscolor = 10
+		elif color <= 0x008080: xlscolor = 14
+		elif color <= 0x008080: xlscolor = 31
+		elif color <= 0x00CCFF: xlscolor = 33
+		elif color <= 0x00FF00: xlscolor = 4
+		elif color <= 0x00FFFF: xlscolor = 8
+		elif color <= 0x00FFFF: xlscolor = 28
+		elif color <= 0x333300: xlscolor = 52
+		elif color <= 0x333333: xlscolor = 56
+		elif color <= 0x333399: xlscolor = 55
+		elif color <= 0x3366FF: xlscolor = 41
+		elif color <= 0x339966: xlscolor = 50
+		elif color <= 0x33CCCC: xlscolor = 42
+		elif color <= 0x660066: xlscolor = 21
+		elif color <= 0x666699: xlscolor = 47
+		elif color <= 0x800000: xlscolor = 9
+		elif color <= 0x800000: xlscolor = 30
+		elif color <= 0x800080: xlscolor = 13
+		elif color <= 0x800080: xlscolor = 29
+		elif color <= 0x808000: xlscolor = 12
+		elif color <= 0x808080: xlscolor = 16
+		elif color <= 0x969696: xlscolor = 48
+		elif color <= 0x993300: xlscolor = 53
+		elif color <= 0x993366: xlscolor = 18
+		elif color <= 0x993366: xlscolor = 54
+		elif color <= 0x9999FF: xlscolor = 17
+		elif color <= 0x99CC00: xlscolor = 43
+		elif color <= 0x99CCFF: xlscolor = 37
+		elif color <= 0xC0C0C0: xlscolor = 15
+		elif color <= 0xCC99FF: xlscolor = 39
+		elif color <= 0xCCCCFF: xlscolor = 24
+		elif color <= 0xCCFFCC: xlscolor = 35
+		elif color <= 0xCCFFFF: xlscolor = 20
+		elif color <= 0xCCFFFF: xlscolor = 34
+		elif color <= 0xFF0000: xlscolor = 3
+		elif color <= 0xFF00FF: xlscolor = 7
+		elif color <= 0xFF00FF: xlscolor = 26
+		elif color <= 0xFF6600: xlscolor = 46
+		elif color <= 0xFF8080: xlscolor = 22
+		elif color <= 0xFF9900: xlscolor = 45
+		elif color <= 0xFF99CC: xlscolor = 38
+		elif color <= 0xFFCC00: xlscolor = 44
+		elif color <= 0xFFCC99: xlscolor = 40
+		elif color <= 0xFFFF00: xlscolor = 6
+		elif color <= 0xFFFF00: xlscolor = 27
+		elif color <= 0xFFFF99: xlscolor = 36
+		elif color <= 0xFFFFCC: xlscolor = 19
+		elif color <= 0xFFFFFF: xlscolor = 2
+		
+		return (xlscolor - 1)
 		
 	def saveXls(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''
@@ -60,7 +150,7 @@ class SodsXls(Sods):
 				fnt = Font()
 				fnt.name = c.font_family
 				fnt.height = 18 * int(c.font_size.replace('pt',''))
-				fnt.colour_index = 0x0000 #self.convertXlsColor(c.color)
+				fnt.colour_index = self.convertXlsColor(c.color)
 				
 				borders = Borders()
 				borders.left = self.convertXlsBorderWidth(c.border_left)
@@ -74,7 +164,7 @@ class SodsXls(Sods):
 				
 				pattern = Pattern()
 				pattern.pattern = Pattern.SOLID_PATTERN
-				pattern.pattern_fore_colour = 0x0001 #self.convertXlsColor(c.background_color)
+				pattern.pattern_fore_colour = self.convertXlsColor(c.background_color)
 				
 				style = XFStyle()
 				style.font = fnt
