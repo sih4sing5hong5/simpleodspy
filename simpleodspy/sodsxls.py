@@ -19,6 +19,8 @@
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
 import re
+from datetime import datetime
+
 from xlwt import *
 
 from sods import Sods
@@ -179,6 +181,11 @@ class SodsXls(Sods):
 				# set xls text
 				if (c.formula):
 					ws.write(i - 1, j - 1, Formula(c.formula[1:]), style)
+				elif c.value_type == 'float':
+					ws.write(i - 1, j - 1, c.value, style)
+				elif c.value_type == 'date':
+					style.num_format_str = 'YYYY-MM-DD'
+					ws.write(i - 1, j - 1, datetime.strptime(c.date_value, "%Y-%m-%d"), style)
 				else:
 					ws.write(i - 1, j - 1, c.text, style)
 		
