@@ -146,11 +146,16 @@ class SodsXls(Sods):
 				self.updateOneCell(cell)
 				c = self.getCellAt(i, j)
 				
+				# FIXME: excel output does not support conditional formating,
+				# we do fixed formating of the conditional formating
+				color = [self.color, self.condition_color][self.condition_state]
+				background_color = [self.background_color, self.condition_background_color][self.condition_state]
+				
 				# set xls style
 				fnt = Font()
 				fnt.name = c.font_family
 				fnt.height = 18 * int(c.font_size.replace('pt',''))
-				fnt.colour_index = self.convertXlsColor(c.color)
+				fnt.colour_index = self.convertXlsColor(color)
 				
 				borders = Borders()
 				borders.left = self.convertXlsBorderWidth(c.border_left)
@@ -164,7 +169,7 @@ class SodsXls(Sods):
 				
 				pattern = Pattern()
 				pattern.pattern = Pattern.SOLID_PATTERN
-				pattern.pattern_fore_colour = self.convertXlsColor(c.background_color)
+				pattern.pattern_fore_colour = self.convertXlsColor(background_color)
 				
 				style = XFStyle()
 				style.font = fnt
