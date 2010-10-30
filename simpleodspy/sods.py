@@ -25,19 +25,18 @@ from odf.number import NumberStyle, CurrencyStyle, TextStyle, Number,  Text
 from odf.text import P
 
 from sodscell import SodsCell
-from sodsspreadsheet import SodsSpreadSheet
 
-class Sods(SodsSpreadSheet):
-	def __init__(self, i_max = 30, j_max = 30):
+class Sods():
+	def __init__(self, table, i_max = 30, j_max = 30):
 		''' init and set default values for spreadsheet elements '''
 		
-		SodsSpreadSheet.__init__(self, i_max, j_max)
+		self.table = table
 	
 	def saveOds(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''
 		
-		if not i_max: i_max = self.i_max
-		if not j_max: j_max = self.j_max
+		if not i_max: i_max = self.table.i_max
+		if not j_max: j_max = self.table.j_max
 		
 		# create new odf spreadsheet
 		odfdoc = OpenDocumentSpreadsheet()
@@ -65,9 +64,9 @@ class Sods(SodsSpreadSheet):
 
 			for j in range(1, j_max):
 				# update the cell text and condition
-				cell = self.encodeColName(j) + str(i)
-				self.updateOneCell(cell)
-				c = self.getCellAt(i, j)
+				cell = self.table.encodeColName(j) + str(i)
+				self.table.updateOneCell(cell)
+				c = self.table.getCellAt(i, j)
 				
 				# set ods style
 				cs = Style(name = cell, family = 'table-cell')
@@ -114,7 +113,9 @@ class Sods(SodsSpreadSheet):
 		
 if __name__ == "__main__":
 	
-	t = Sods()
+	from sodsspreadsheet import SodsSpreadSheet
+
+	t = SodsSpreadSheet()
 	
 	print "Test spreadsheet naming:"
 	print "-----------------------"
@@ -136,5 +137,7 @@ if __name__ == "__main__":
 	t.setCell("D2:D3", condition_color = "#ff0000")
 	
 	t.saveHtml("test.html", 16,16)
-	t.saveOds("test.ods")
+	
+	tw = Sods(t)
+	tw.saveOds("test.ods")
 	

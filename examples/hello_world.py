@@ -18,9 +18,9 @@
 # Copyright (C) 2010 Yaacov Zamir (2010) <kzamir@walla.co.il>
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
-from simpleodspy.sodsxls import SodsXls
+from simpleodspy.sodsspreadsheet import SodsSpreadSheet
 
-t = SodsXls(10, 10)
+t = SodsSpreadSheet(10, 10)
 	
 print "Test spreadsheet naming:"
 print "-----------------------"
@@ -45,11 +45,9 @@ t.setCell("B1:B5", condition_color = "#ff0000")
 t.saveCsv("test.csv")
 t.saveXml("test.xml")
 t.saveHtml("test.html")
-t.saveOds("test.ods")
-t.saveXls("test.xls")
 
 # import
-t2 = SodsXls()
+t2 = SodsSpreadSheet()
 t2.loadXmlfile("test.xml")
 t2.saveHtml("test2.html")
 

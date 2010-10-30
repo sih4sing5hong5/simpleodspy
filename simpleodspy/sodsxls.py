@@ -23,13 +23,11 @@ from datetime import datetime
 
 from xlwt import *
 
-from sods import Sods
-
-class SodsXls(Sods):
-	def __init__(self, i_max = 30, j_max = 30):
+class SodsXls():
+	def __init__(self, table, i_max = 30, j_max = 30):
 		''' init and set default values for spreadsheet elements '''
 		
-		Sods.__init__(self, i_max, j_max)
+		self.table = table
 	
 	def convertXlsFamiliy(self, font_family):
 		''' return the font family name '''
@@ -132,8 +130,8 @@ class SodsXls(Sods):
 	def saveXls(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''
 		
-		if not i_max: i_max = self.i_max
-		if not j_max: j_max = self.j_max
+		if not i_max: i_max = self.table.i_max
+		if not j_max: j_max = self.table.j_max
 		
 		# create new xls spreadsheet
 		w = Workbook(encoding='utf-8')
@@ -144,9 +142,9 @@ class SodsXls(Sods):
 		for i in range(1, i_max):
 			for j in range(1, j_max):
 				# update the cell text and condition
-				cell = self.encodeColName(j) + str(i)
-				self.updateOneCell(cell)
-				c = self.getCellAt(i, j)
+				cell = self.table.encodeColName(j) + str(i)
+				self.table.updateOneCell(cell)
+				c = self.table.getCellAt(i, j)
 				
 				# FIXME: excel output does not support conditional formating,
 				# we do fixed formating of the conditional formating
@@ -193,7 +191,9 @@ class SodsXls(Sods):
 		
 if __name__ == "__main__":
 	
-	t = SodsXls()
+	from sodsspreadsheet import SodsSpreadSheet
+	
+	t = SodsSpreadSheet()
 	
 	print "Test spreadsheet naming:"
 	print "-----------------------"
@@ -215,6 +215,7 @@ if __name__ == "__main__":
 	t.setCell("D2:D3", condition_color = "#ff0000")
 	
 	t.saveHtml("test.html", 16,16)
-	t.saveXls("test.xls")
 	t.saveCsv("test.csv")
 	
+	tw = SodsXls(t)
+	tw.saveXls("test.xls")
