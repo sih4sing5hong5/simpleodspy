@@ -39,7 +39,7 @@ class SodsXls(Sods):
 		
 		# find the width in pt
 		try:
-			width = eval(re.search('(.+)pt', border).group(1))
+			width = int(re.search('(.+)pt', border).group(1))
 		except:
 			return Borders.NO_LINE
 			
@@ -61,7 +61,7 @@ class SodsXls(Sods):
 		
 		#find color #rgb in string
 		try:
-			color = eval("0x" + re.search('#(......)', color_str).group(1))
+			color = int(re.search('#(......)', color_str).group(1), 16)
 		except:
 			return 0
 		
