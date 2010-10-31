@@ -18,52 +18,53 @@
 # Copyright (C) 2010 Yaacov Zamir (2010) <kzamir@walla.co.il>
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
-import re
-from datetime import datetime
-
-from openpyxl.workbook import Workbook
-from openpyxl.style import Color, Fill
-from openpyxl.writer.excel import ExcelWriter
-
-class SodsXlsx():
+class SodsCsv():
 	def __init__(self, table, i_max = 30, j_max = 30):
 		''' init and set default values for spreadsheet elements '''
 		
 		self.table = table
 	
-	def saveXlsx(self, filename, i_max = None, j_max = None):
-		''' save table in ods format '''
+	def exportCsv(self, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
+		''' export table in csv format '''
 		
 		if not i_max: i_max = self.table.i_max
 		if not j_max: j_max = self.table.j_max
 		
-		# create new xlsx spreadsheet
-		wb = Workbook()
-		ew = ExcelWriter(workbook = wb)
-		dest_filename = filename
-		ws = wb.worksheets[0]
-		ws.title = filename
-
+		# create the table element of the html page
+		out = ""
+		
+		for i in range(1, i_max):
+			for j in range(1, j_max):
+				# get cell
+				c = self.table.getCellAt(i,j)
+				
+				# if type is string add  text delemiter
+				if c.text != '' and c.value_type == 'string':
+					out += "%s%s%s%s" % (txt_delimiter, self.table.getCellAt(i,j).text, txt_delimiter, delimiter)
+				else:
+					out += "%s%s" % (self.table.getCellAt(i,j).text, delimiter)
+			out += "\n"
+		
+		return out
+		
+	def saveCsv(self, filename, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
+		''' save table in csv format '''
+		
+		if not i_max: i_max = self.table.i_max
+		if not j_max: j_max = self.table.j_max
+		
 		# make sure values are up to date
 		# loop and update the cells value
 		for i in range(1, i_max):
 			for j in range(1, j_max):
-				# update the cell text and condition
-				cell = self.table.encodeColName(j) + str(i)
+				cell = self.table.encodeCellName(i, j)
 				self.table.updateOneCell(cell)
-				c = self.table.getCellAt(i, j)
-				
-				# set xls text
-				if (c.formula):
-					ws.cell(cell).value = c.formula
-				elif c.value_type == 'float':
-					ws.cell(cell).value = c.value
-				elif c.value_type == 'date':
-					ws.cell(cell).value = datetime.strptime(c.date_value, "%Y-%m-%d")
-				else:
-					ws.cell(cell).value = c.text
 		
-		ew.save(filename = filename)
+		# if filename is - print to stdout
+		if filename == '-':
+			print self.exportCsv(i_max, j_max, delimiter, txt_delimiter)
+		else:
+			file(filename,"w").write(self.exportCsv(i_max, j_max, delimiter, txt_delimiter))
 		
 if __name__ == "__main__":
 	
@@ -90,6 +91,6 @@ if __name__ == "__main__":
 	t.setStyle("D2:D3", condition = "cell-content()<=200")
 	t.setStyle("D2:D3", condition_color = "#ff0000")
 	
-	tw = SodsXlsx(t)
-	tw.saveXlsx("test.xlsx")
+	tw = SodsCsv(t)
+	tw.saveCsv("test.csv")
 	

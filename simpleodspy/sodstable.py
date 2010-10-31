@@ -38,13 +38,6 @@ class SodsTable:
 		# TODO: add dtd or scheme
 		self.dtd= ''' '''
 		
-		# takes table
-		self.html_format = '''<html><head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-</head><body>
-%s
-</body></html>'''
-		
 		# takes dtd, cells
 		self.xml_format = '''<?xml version="1.0" encoding="UTF-8"?>
 %s
@@ -163,48 +156,7 @@ class SodsTable:
 		
 		# return cell to table
 		self.setCellAt(i, j, c)
-		
-	def exportHtml(self, i_max = None, j_max = None):
-		''' export table in html format '''
-		
-		if not i_max: i_max = self.i_max
-		if not j_max: j_max = self.j_max
-		
-		# create the table element of the html page
-		out = "<table>\n"
-		
-		for i in range(1, i_max):
-			out += "<tr>\n"
-			for j in range(1, j_max):
-				out += self.getCellAt(i,j).exportHtml()
-			out += "</tr>\n"
-		out += "</table>"
-		
-		return self.html_format % out
 	
-	def exportCsv(self, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
-		''' export table in html format '''
-		
-		if not i_max: i_max = self.i_max
-		if not j_max: j_max = self.j_max
-		
-		# create the table element of the html page
-		out = ""
-		
-		for i in range(1, i_max):
-			for j in range(1, j_max):
-				# get cell
-				c = self.getCellAt(i,j)
-				
-				# if type is string add  text delemiter
-				if c.text != '' and c.value_type == 'string':
-					out += "%s%s%s%s" % (txt_delimiter, self.getCellAt(i,j).text, txt_delimiter, delimiter)
-				else:
-					out += "%s%s" % (self.getCellAt(i,j).text, delimiter)
-			out += "\n"
-		
-		return out
-		
 	def exportXml(self, i_max = None, j_max = None):
 		''' export table in xml format '''
 		
@@ -277,8 +229,6 @@ if __name__ == "__main__":
 	print "------------------------------"
 	
 	file("test.xml","w").write(t.exportXml())
-	file("test.html","w").write(t.exportHtml())
-	file("test.csv","w").write(t.exportCsv())
 	
 	print "Test table xml load from file:"
 	print "------------------------------"

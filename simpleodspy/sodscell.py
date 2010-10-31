@@ -48,36 +48,6 @@ class SodsCell:
 		self.condition_state = False
 		self.condition_color = "#000000"
 		self.condition_background_color = "#ffffff"
-		
-	def exportHtml(self, i = 0, j = 0):
-		''' export cell data as html table cell '''
-		
-		# if condition state is true use condition style
-		# we assume condition_state is up to date
-		color = [self.color, self.condition_color][self.condition_state]
-		background_color = [self.background_color, self.condition_background_color][self.condition_state]
-		
-		# adjust values for html
-		font_size = self.font_size.replace('pt', 'px')
-		border_top = self.border_top.replace('pt', 'px')
-		border_bottom = self.border_bottom.replace('pt', 'px')
-		border_left = self.border_left.replace('pt', 'px')
-		border_right = self.border_right.replace('pt', 'px')
-		
-		# create cell string
-		# we assume text is up to date
-		out = '''
-<td style="color:{0}; font-family:'{1}'; font-size:{2}; 
-		background-color:{3}; 
-		border-top:{4}; border-bottom:{5}; 
-		border-left:{6}; border-right:{7}; ">
-	{8}
-</td>'''.format(color, self.font_family, font_size,
-				background_color, 
-				border_top, border_bottom, border_left, border_right,
-				escape(self.text) + "&nbsp;")
-		
-		return out
 	
 	def exportXml(self, i = 0, j = 0):
 		''' export cell data as xml table cell '''

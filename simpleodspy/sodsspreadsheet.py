@@ -368,48 +368,10 @@ class SodsSpreadSheet(SodsTable):
 		else:
 			file(filename,"w").write(self.exportXml(i_max, j_max))
 	
-	def saveCsv(self, filename, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
-		''' save table in csv format '''
-		
-		if not i_max: i_max = self.i_max
-		if not j_max: j_max = self.j_max
-		
-		# make sure values are up to date
-		# loop and update the cells value
-		for i in range(1, i_max):
-			for j in range(1, j_max):
-				cell = self.encodeCellName(i, j)
-				self.updateOneCell(cell)
-		
-		# if filename is - print to stdout
-		if filename == '-':
-			print self.exportCsv(i_max, j_max, delimiter, txt_delimiter)
-		else:
-			file(filename,"w").write(self.exportCsv(i_max, j_max, delimiter, txt_delimiter))
-			
 	def loadXmlfile(self, filename):
 		''' load a table from file '''
 		
 		self.loadXml(file(filename).read())
-		
-	def saveHtml(self, filename, i_max = None, j_max = None):
-		''' save table in xml format '''
-		
-		if not i_max: i_max = self.i_max
-		if not j_max: j_max = self.j_max
-		
-		# make sure values are up to date
-		# loop and update the cells value
-		for i in range(1, i_max):
-			for j in range(1, j_max):
-				cell = self.encodeCellName(i, j)
-				self.updateOneCell(cell)
-		
-		# if filename is - print to stdout
-		if filename == '-':
-			print self.exportHtml(i_max, j_max)
-		else:
-			file(filename,"w").write(self.exportHtml(i_max, j_max))
 		
 if __name__ == "__main__":
 	
@@ -436,5 +398,5 @@ if __name__ == "__main__":
 	
 	t.updateCell("A1:G3")
 	
-	t.saveHtml("test.html") 
+	t.saveXml("test.xml") 
 	

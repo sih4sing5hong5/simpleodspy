@@ -214,8 +214,5 @@ if __name__ == "__main__":
 	t.setStyle("D2:D3", condition = "cell-content()<=200")
 	t.setStyle("D2:D3", condition_color = "#ff0000")
 	
-	t.saveHtml("test.html", 16,16)
-	t.saveCsv("test.csv")
-	
 	tw = SodsXls(t)
 	tw.saveXls("test.xls")
