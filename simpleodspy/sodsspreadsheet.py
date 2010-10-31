@@ -302,7 +302,7 @@ class SodsSpreadSheet(SodsTable):
 			formula = formula.replace('import', '')
 			formula = formula.replace('print', '')
 			
-			# get all the cell names in this formula and replace them with values
+			# look for user defined functions and replace them with user data
 			for function_name, function_callback in self.registered_functions:
 				formula = re.sub(function_name + '[(](.+)[)]', function_callback, formula)
 			
