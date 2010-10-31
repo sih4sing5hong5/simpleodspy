@@ -247,12 +247,18 @@ class SodsSpreadSheet(SodsTable):
 		
 		return self.getOneCellValue(name)
 	
-	def averageCallback(self, args_string):
+	def functionCallback(self, f, args_string):
 		''' return the updated float value of a cell input name is re group '''
 		
 		# we work with a string, 
 		# get the re.group args string
 		args_string = args_string.group(1)
+		
+		# return a string that represents the function value
+		return f(args_string)
+		
+	def averageCallback(self, args_string):
+		''' return the updated float value of a cell input name is re group '''
 		
 		# return a string that represents the function value
 		return "(sum(" + args_string + ")/len(" + args_string + "))"
@@ -303,8 +309,8 @@ class SodsSpreadSheet(SodsTable):
 			formula = formula.replace('print', '')
 			
 			# look for user defined functions and replace them with user data
-			for function_name, function_callback in self.registered_functions:
-				formula = re.sub(function_name + '[(](.+)[)]', function_callback, formula)
+			for f_name, f_callback in self.registered_functions:
+				formula = re.sub(f_name + '[(](.+)[)]', lambda f: self.functionCallback(f_callback, f), formula)
 			
 			# check for ranges e.g. 'A2:G3' and replace them with (A2,A3 ... G3) tupple
 			formula = re.sub('[A-Z]+[0-9]+:[A-Z]+[0-9]+', 
