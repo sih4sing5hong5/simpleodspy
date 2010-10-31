@@ -286,6 +286,53 @@ class SodsSpreadSheet(SodsTable):
 		c = self.getCellAt(i, j)
 		
 		return str(c.value)
+	
+	def evaluateFormula(self, formula):
+		''' evaluate the value of a formula '''
+		
+		# remove white spaces
+		formula = re.sub(r'\s', '', formula)
+		formula = formula.replace('!', '')
+		formula = formula.replace(';', '')
+		formula = formula.replace('$', '')
+		formula = formula.replace('import', '')
+		formula = formula.replace('print', '')
+		
+		# to to simply evalute the formula as is
+		try:
+			return str(eval(fromula))
+		except:
+			pass
+		
+		# look for user defined functions and replace them with user data
+		for f_name, f_callback in self.registered_functions:
+			formula = re.sub(f_name + '[(](.+)[)]', lambda f: self.functionCallback(f_callback, f), formula)
+		
+		# check for ranges e.g. 'A2:G3' and replace them with (A2,A3 ... G3) tupple
+		formula = re.sub('[A-Z]+[0-9]+:[A-Z]+[0-9]+', 
+			self.getRangeString, formula)
+		
+		# replce spreadsheet function names to python function
+		formula = formula.replace('SUM(', 'sum(')
+		formula = formula.replace('MIN(', 'min(')
+		formula = formula.replace('MAX(', 'max(')
+		formula = formula.replace('ABS(', 'abs(')
+		
+		formula = formula.replace('POWER(', 'math.pow(')
+		formula = formula.replace('SQRT(', 'math.sqrt(')
+		
+		formula = formula.replace('PI', 'math.pi')
+		formula = formula.replace('SIN(', 'math.sin(')
+		formula = formula.replace('COS(', 'math.cos(')
+		formula = formula.replace('TAN(', 'math.cos(')
+		formula = formula.replace('ASIN(', 'math.asin(')
+		formula = formula.replace('ACOS(', 'math.acos(')
+		formula = formula.replace('ATAN(', 'math.atan(')
+		
+		# get all the cell names in this formula and replace them with values
+		value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValueRe, formula))
+		
+		return value
 		
 	def updateOneCell(self, name):
 		''' update one cell text '''
@@ -297,65 +344,34 @@ class SodsSpreadSheet(SodsTable):
 		
 		# check if the cell has formula
 		if c.formula:
-			# remove the '='
-			formula = c.formula[1:]
+			# try to calculate the formula
+			try:
+				# remove the '=' prefix
+				formula = c.formula[1:]
+				value = self.evaluateFormula(formula)
 			
-			# remove white spaces
-			formula = re.sub(r'\s', '', formula)
-			formula = formula.replace('!', '')
-			formula = formula.replace(';', '')
-			formula = formula.replace('$', '')
-			formula = formula.replace('import', '')
-			formula = formula.replace('print', '')
-			
-			# look for user defined functions and replace them with user data
-			for f_name, f_callback in self.registered_functions:
-				formula = re.sub(f_name + '[(](.+)[)]', lambda f: self.functionCallback(f_callback, f), formula)
-			
-			# check for ranges e.g. 'A2:G3' and replace them with (A2,A3 ... G3) tupple
-			formula = re.sub('[A-Z]+[0-9]+:[A-Z]+[0-9]+', 
-				self.getRangeString, formula)
-			
-			# replce spreadsheet function names to python function
-			formula = formula.replace('SUM(', 'sum(')
-			formula = formula.replace('MIN(', 'min(')
-			formula = formula.replace('MAX(', 'max(')
-			formula = formula.replace('ABS(', 'abs(')
-			
-			formula = formula.replace('POWER(', 'math.pow(')
-			formula = formula.replace('SQRT(', 'math.sqrt(')
-			
-			formula = formula.replace('PI', 'math.pi')
-			formula = formula.replace('SIN(', 'math.sin(')
-			formula = formula.replace('COS(', 'math.cos(')
-			formula = formula.replace('TAN(', 'math.cos(')
-			formula = formula.replace('ASIN(', 'math.asin(')
-			formula = formula.replace('ACOS(', 'math.acos(')
-			formula = formula.replace('ATAN(', 'math.atan(')
-			
-			# get all the cell names in this formula and replace them with values
-			value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValueRe, formula))
-			
-			# update cell value and text string
-			c.value = value
-			c.text = str(value)
+				# update cell value and text string
+				c.value = value
+				c.text = str(value)
+			except:
+				c.value = 0
+				c.text = "!ERR"
 			
 		# check if the cell has condition
 		if c.condition:
 			# replace the cell-content() function with the cells value
-			if (c.value):
+			if (c.value != None):
 				value = c.value
 			else:
 				value = self.getOneCellValue(name)
 			formula = c.condition.replace("cell-content()", str(value))
 		
-			# check for ranges e.g. 'A2:G3' and replace them with (A2,A3 ... G3) tupple
-			formula = re.sub('[A-Z]+[0-9]+:[A-Z]+[0-9]+', 
-				self.getRangeString, formula)
-		
-			# get all the cell names in this formula and replace them with values
-			value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValueRe, formula))
-		
+			# evaluate the condition formula
+			try:
+				value = self.evaluateFormula(formula)
+			except:
+				value = False
+			
 			# update condition state
 			c.condition_state = value
 		
@@ -438,7 +454,7 @@ if __name__ == "__main__":
 	t.setValue("C3", "Sum of cells:")
 	t.setValue("D3", "=SUM($A$2:D2)")
 	
-	t.setStyle("D2:D3", condition = "cell-content()<=200")
+	t.setStyle("D2:D3", condition = "cell-content()<=100")
 	t.setStyle("D2:D3", condition_background_color = "#ff0000")
 	
 	t.updateCell("A1:G3")
