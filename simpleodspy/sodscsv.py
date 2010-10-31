@@ -50,15 +50,8 @@ class SodsCsv():
 	def saveCsv(self, filename, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
 		''' save table in csv format '''
 		
-		if not i_max: i_max = self.table.i_max
-		if not j_max: j_max = self.table.j_max
-		
-		# make sure values are up to date
-		# loop and update the cells value
-		for i in range(1, i_max):
-			for j in range(1, j_max):
-				cell = self.table.encodeCellName(i, j)
-				self.table.updateOneCell(cell)
+		# update cells text
+		self.table.updateTable(i_max, j_max)
 		
 		# if filename is - print to stdout
 		if filename == '-':

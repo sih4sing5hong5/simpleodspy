@@ -30,6 +30,17 @@ class SodsSpreadSheet(SodsTable):
 		
 		SodsTable.__init__(self, i_max, j_max)
 		
+		# init function list
+		self.registered_functions = []
+		
+		# add functions
+		self.registerFunction('AVERAGE', self.averageCallback)
+		
+	def registerFunction(self, function_name, function_callback):
+		''' register a spreadsheet function '''
+		
+		self.registered_functions.append((function_name, function_callback))
+		
 	def parseColName(self, name):
 		''' parse a col name "A" or "BC" to the col number 1.. '''
 		
@@ -236,6 +247,16 @@ class SodsSpreadSheet(SodsTable):
 		
 		return self.getOneCellValue(name)
 	
+	def averageCallback(self, args_string):
+		''' return the updated float value of a cell input name is re group '''
+		
+		# we work with a string, 
+		# get the re.group args string
+		args_string = args_string.group(1)
+		
+		# return a string that represents the function value
+		return "(sum(" + args_string + ")/len(" + args_string + "))"
+		
 	def getOneCellValue(self, name):
 		''' return the updated float value of a cell '''
 		
@@ -281,6 +302,14 @@ class SodsSpreadSheet(SodsTable):
 			formula = formula.replace('import', '')
 			formula = formula.replace('print', '')
 			
+			# get all the cell names in this formula and replace them with values
+			for function_name, function_callback in self.registered_functions:
+				formula = re.sub(function_name + '[(](.+)[)]', function_callback, formula)
+			
+			# check for ranges e.g. 'A2:G3' and replace them with (A2,A3 ... G3) tupple
+			formula = re.sub('[A-Z]+[0-9]+:[A-Z]+[0-9]+', 
+				self.getRangeString, formula)
+			
 			# replce spreadsheet function names to python function
 			formula = formula.replace('SUM(', 'sum(')
 			formula = formula.replace('MIN(', 'min(')
@@ -298,10 +327,6 @@ class SodsSpreadSheet(SodsTable):
 			formula = formula.replace('ACOS(', 'math.acos(')
 			formula = formula.replace('ATAN(', 'math.atan(')
 			
-			# check for ranges e.g. 'A2:G3' and replace them with (A2,A3 ... G3) tupple
-			formula = re.sub('[A-Z]+[0-9]+:[A-Z]+[0-9]+', 
-				self.getRangeString, formula)
-		
 			# get all the cell names in this formula and replace them with values
 			value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValueRe, formula))
 			
@@ -348,9 +373,9 @@ class SodsSpreadSheet(SodsTable):
 			for j in j_range:
 				cell = self.encodeCellName(i, j)
 				self.updateOneCell(cell)
-		
-	def saveXml(self, filename, i_max = None, j_max = None):
-		''' save table in xml format '''
+	
+	def updateTable(self, name, i_max = None, j_max = None):
+		''' update table texts values '''
 		
 		if not i_max: i_max = self.i_max
 		if not j_max: j_max = self.j_max
@@ -361,6 +386,12 @@ class SodsSpreadSheet(SodsTable):
 			for j in range(1, j_max):
 				cell = self.encodeCellName(i, j)
 				self.updateOneCell(cell)
+		
+	def saveXml(self, filename, i_max = None, j_max = None):
+		''' save table in xml format '''
+		
+		# update cells text
+		self.updateTable(i_max, j_max)
 		
 		# if filename is - print to stdout
 		if filename == '-':
@@ -387,6 +418,14 @@ if __name__ == "__main__":
 	t.setValue("A2", 123.4)
 	t.setValue("B2", "2010-01-01")
 	t.setValue("C2", "0.6")
+	
+	t.setValue("C5", 0.6)
+	t.setValue("C6", 0.6)
+	t.setValue("C7", 0.8)
+	t.setValue("C8", 0.8)
+	t.setValue("C9", "=AVERAGE(C5:C8)")
+	t.setValue("C10", "=SUM(C5:C8)")
+	
 	t.setValue("D2", "= SIN(PI/2)")
 	
 	t.setStyle("A3:D3", border_top = "1pt solid #ff0000")
