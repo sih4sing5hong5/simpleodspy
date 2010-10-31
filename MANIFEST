@@ -3,7 +3,9 @@ COPYING
 MANIFEST
 setup.py
 simpleodspy/__init__.py
-simpleodspy/sods.py
+simpleodspy/sodOds.py
+simpleodspy/sodsHtml.py
+simpleodspy/sodsCsv.py
 simpleodspy/sodsxls.py
 simpleodspy/sodsxlsx.py
 simpleodspy/sodscell.py

@@ -4,7 +4,7 @@
 from distutils.core import setup
 
 setup(name='simpleodspy',
-      version='0.3',
+      version='0.4',
       description='Simple spreadsheet class with ods export',
       author='Yaacov Zamir',
       author_email='kzamir@walla.co.il',

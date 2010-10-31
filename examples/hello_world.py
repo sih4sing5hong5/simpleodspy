@@ -33,22 +33,20 @@ t.setValue("B3", "=B2+3")
 t.setValue("B4", "=sum(B2:B3)")
 
 # cell styles
-t.setCell("A1", color = "#0000ff")
-t.setCell("A1:A5", background_color = "#00ff00")
-t.setCell("B1:B5", border_left = "1pt solid #ff0000", background_color = "#ffff00")
+t.setStyle("A1", color = "#0000ff")
+t.setStyle("A1:A5", background_color = "#00ff00")
+t.setStyle("B1:B5", border_left = "1pt solid #ff0000", background_color = "#ffff00")
 
 # conditional styles
-t.setCell("B1:B5", condition = "cell-content()<=125")
-t.setCell("B1:B5", condition_color = "#ff0000")
+t.setStyle("B1:B5", condition = "cell-content()<=125")
+t.setStyle("B1:B5", condition_color = "#ff0000")
 
 # export
-t.saveCsv("test.csv")
 t.saveXml("test.xml")
-t.saveHtml("test.html")
 
 # import
 t2 = SodsSpreadSheet()
 t2.loadXmlfile("test.xml")
-t2.saveHtml("test2.html")
+t2.saveXml("test2.xml")
 
 
