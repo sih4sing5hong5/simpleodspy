@@ -39,7 +39,7 @@ class SodsSpreadSheet(SodsTable):
 		return (ord(name[-1:]) - ord('A') + 1) + 26 * self.parseColName(name[:-1])
 	
 	def encodeColName(self, n):
-		''' parse a col number 1.. to a name "A" or "BC" '''
+		''' encode a col number 1.. to a name "A" or "BC" '''
 		
 		n1 = (n - 1) % 26
 		n2 = int((n - 1) / 26)
@@ -48,6 +48,11 @@ class SodsSpreadSheet(SodsTable):
 			return chr(ord('A') + n1)
 		
 		return chr(ord('A') + n2 - 1) + chr(ord('A') + n1)
+		
+	def encodeCellName(self, i, j):
+		''' encode a cell i, j coordinates to a name "A1" or "BC23" '''
+		
+		return self.encodeColName(j) + str(i)
 		
 	def parseOneCellName(self, name):
 		''' parse a cell name "A2" or "BC43" to the row and col numbers (2,3) '''
@@ -341,7 +346,7 @@ class SodsSpreadSheet(SodsTable):
 		# loop and update the cells value
 		for i in i_range:
 			for j in j_range:
-				cell = self.encodeColName(j) + str(i)
+				cell = self.encodeCellName(i, j)
 				self.updateOneCell(cell)
 		
 	def saveXml(self, filename, i_max = None, j_max = None):
@@ -354,7 +359,7 @@ class SodsSpreadSheet(SodsTable):
 		# loop and update the cells value
 		for i in range(1, i_max):
 			for j in range(1, j_max):
-				cell = self.encodeColName(j) + str(i)
+				cell = self.encodeCellName(i, j)
 				self.updateOneCell(cell)
 		
 		# if filename is - print to stdout
@@ -373,7 +378,7 @@ class SodsSpreadSheet(SodsTable):
 		# loop and update the cells value
 		for i in range(1, i_max):
 			for j in range(1, j_max):
-				cell = self.encodeColName(j) + str(i)
+				cell = self.encodeCellName(i, j)
 				self.updateOneCell(cell)
 		
 		# if filename is - print to stdout
@@ -397,7 +402,7 @@ class SodsSpreadSheet(SodsTable):
 		# loop and update the cells value
 		for i in range(1, i_max):
 			for j in range(1, j_max):
-				cell = self.encodeColName(j) + str(i)
+				cell = self.encodeCellName(i, j)
 				self.updateOneCell(cell)
 		
 		# if filename is - print to stdout
