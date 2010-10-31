@@ -101,7 +101,7 @@ class SodsSpreadSheet(SodsTable):
 		
 		cell_list = []
 		
-		# get the range part of the formula
+		# parse the rnage
 		i_range, j_range = self.parseCellName(name)
 		
 		# we want ranges
@@ -111,14 +111,32 @@ class SodsSpreadSheet(SodsTable):
 		if type(j_range) != type(list()):
 			j_range = [j_range]
 		
-		# loop and create the cells sum
+		# loop and create the cells list
 		for i in i_range:
 			for j in j_range:
-				cell = self.encodeColName(j) + str(i)
+				cell = self.encodeCellName(i, j)
 				cell_list.append(cell)
 		
 		return cell_list
 	
+	def rangeIterator(self, range_str):
+		''' parse a range name "A2:A4" or "A1:BC43" to array of cells '''
+		
+		# parse the rnage
+		i_range, j_range = self.parseCellName(range_str)
+		
+		# we want ranges
+		if type(i_range) != type(list()):
+			i_range = [i_range]
+		
+		if type(j_range) != type(list()):
+			j_range = [j_range]
+		
+		# loop and yield cells 
+		for i in i_range:
+			for j in j_range:
+				yield self.encodeCellName(i, j)
+		
 	def isFloat(self, x):
 		''' return true if x represent float '''
 		
@@ -300,7 +318,7 @@ class SodsSpreadSheet(SodsTable):
 		
 		# to to simply evalute the formula as is
 		try:
-			return str(eval(fromula))
+			return eval(fromula)
 		except:
 			pass
 		

@@ -52,10 +52,14 @@ t2.saveXml("test2.xml")
 from simpleodspy.sodshtml import SodsHtml
 
 def myCallback(args):
-	return "(" + args + "*3)"
+	val = 0
+	for arg in t.rangeIterator(args):
+		val += t.evaluateFormula(arg) * 2
+		
+	return str(val)
 
 t.registerFunction('MY', myCallback)
-t.setValue("B5", "=MY(B2)")
+t.setValue("B5", "=MY(B2:B3)")
 
 tw = SodsHtml(t)
 tw.saveHtml("test.html")
