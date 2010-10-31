@@ -74,21 +74,21 @@ if __name__ == "__main__":
 	print "Test spreadsheet naming:"
 	print "-----------------------"
 	
-	t.setCell("A1", text = "Simple ods python")
-	t.setCell("A1:G2", background_color = "#00ff00")
-	t.setCell("A3:G5", background_color = "#ffff00")
+	t.setStyle("A1", text = "Simple ods python")
+	t.setStyle("A1:G2", background_color = "#00ff00")
+	t.setStyle("A3:G5", background_color = "#ffff00")
 	
 	t.setValue("A2", 123.4)
 	t.setValue("B2", "2010-01-01")
 	t.setValue("C2", "=0.6")
 	t.setValue("D2", "= A2 + 3")
 	
-	t.setCell("A3:D3", border_top = "1pt solid #ff0000")
+	t.setStyle("A3:D3", border_top = "1pt solid #ff0000")
 	t.setValue("C3", "Sum of cells:")
 	t.setValue("D3", "=sum(A2:D2)")
 	
-	t.setCell("D2:D3", condition = "cell-content()<=200")
-	t.setCell("D2:D3", condition_color = "#ff0000")
+	t.setStyle("D2:D3", condition = "cell-content()<=200")
+	t.setStyle("D2:D3", condition_color = "#ff0000")
 	
 	t.saveHtml("test.html", 16,16)
 	
