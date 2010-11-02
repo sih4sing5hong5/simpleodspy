@@ -103,8 +103,7 @@ class SodsOds():
 					tc = TableCell(valuetype = c.value_type, stylename = cell)
 				
 				# set ods text
-				if (tc and c.value_type == 'string'):
-					tc.addElement(P(text = c.text))
+				tc.addElement(P(text = c.text))
 				
 				tr.addElement(tc)
 
