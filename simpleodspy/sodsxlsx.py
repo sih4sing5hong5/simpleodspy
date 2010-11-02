@@ -22,7 +22,7 @@ import re
 from datetime import datetime
 
 from openpyxl.workbook import Workbook
-from openpyxl.style import Color, Fill
+from openpyxl.style import Color, Border, Fill
 from openpyxl.writer.excel import ExcelWriter
 
 class SodsXlsx():
@@ -31,6 +31,34 @@ class SodsXlsx():
 		
 		self.table = table
 	
+	def convertXlsBorderWidth(self, border):
+		''' return the xls border width index '''
+		
+		# find the width in pt
+		try:
+			width = int(re.search('(.+)pt', border).group(1))
+		except:
+			return Border.BORDER_NONE
+			
+		# conver to excel widths
+		if width > 2: xlsborder = Border.BORDER_THICK
+		elif width == 2: xlsborder = Border.BORDER_MEDIUM
+		elif width == 1: xlsborder = Border.BORDER_THIN
+		else: xlsborder = Border.BORDER_NONE
+		
+		return xlsborder
+	
+	def convertXlsBorderColor(self, color_str):
+		''' return the xls color index '''
+		
+		#find color #rgb in string
+		try:
+			color = re.search('#(......)', color_str).group(1)
+		except:
+			return Color('00000000')
+		
+		return Color('00' + color.upper()[1:])
+		
 	def saveXlsx(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''
 		
@@ -53,6 +81,23 @@ class SodsXlsx():
 				self.table.updateOneCell(cell)
 				c = self.table.getCellAt(i, j)
 				
+				ws.cell(cell).style.font.name = c.font_family
+				ws.cell(cell).style.font.size = int(c.font_size[:-2])
+				ws.cell(cell).style.font.color = Color('FF' + c.color.upper()[1:])
+
+				ws.cell(cell).style.fill.fill_type = 'solid'
+				ws.cell(cell).style.fill.start_color = Color('00' + c.background_color.upper()[1:])
+				ws.cell(cell).style.fill.end_color = Color('00' + c.background_color.upper()[1:])
+
+				ws.cell(cell).style.borders.left.border_style = self.convertXlsBorderWidth(c.border_left)
+				ws.cell(cell).style.borders.left.color = self.convertXlsBorderColor(c.border_left)
+				ws.cell(cell).style.borders.right.border_style = self.convertXlsBorderWidth(c.border_right)
+				ws.cell(cell).style.borders.left.color = self.convertXlsBorderColor(c.border_right)
+				ws.cell(cell).style.borders.top.border_style = self.convertXlsBorderWidth(c.border_top)
+				ws.cell(cell).style.borders.left.color = self.convertXlsBorderColor(c.border_top)
+				ws.cell(cell).style.borders.bottom.border_style = self.convertXlsBorderWidth(c.border_bottom)
+				ws.cell(cell).style.borders.left.color = self.convertXlsBorderColor(c.border_bottom)
+				
 				# set xls text
 				if (c.formula):
 					ws.cell(cell).value = c.formula
@@ -61,7 +106,7 @@ class SodsXlsx():
 				elif c.value_type == 'date':
 					ws.cell(cell).value = datetime.strptime(c.date_value, "%Y-%m-%d")
 				else:
-					ws.cell(cell).value = c.text
+					ws.cell(cell).value = c.text + " "
 		
 		ew.save(filename = filename)
 		
@@ -75,8 +120,11 @@ if __name__ == "__main__":
 	print "-----------------------"
 	
 	t.setStyle("A1", text = "Simple ods python")
-	t.setStyle("A1:G2", background_color = "#00ff00")
-	t.setStyle("A3:G5", background_color = "#ffff00")
+	t.setStyle("A1", font_size = "33pt")
+	t.setStyle("D2", font_size = "23pt", color = "#0000ff")
+	t.setStyle("A1", background_color = "#00ff00")
+	t.setStyle("A2", background_color = "#ffff00")
+	t.setStyle("A3", background_color = "#0000ff")
 	
 	t.setValue("A2", 123.4)
 	t.setValue("B2", "2010-01-01")
