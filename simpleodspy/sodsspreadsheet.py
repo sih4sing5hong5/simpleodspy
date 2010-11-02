@@ -60,8 +60,14 @@ class SodsSpreadSheet(SodsTable):
 		
 		return chr(ord('A') + n2 - 1) + chr(ord('A') + n1)
 		
-	def encodeCellName(self, i, j):
+	def encodeCellName(self, i, j, i2 = None, j2 = None):
 		''' encode a cell i, j coordinates to a name "A1" or "BC23" '''
+		
+		if (i2 and not j2): j2 = j
+		if (not i2 and j2): i2 = i
+		
+		if i2:
+			return self.encodeCellName(i, j) + ":" + self.encodeCellName(i2, j2)
 		
 		return self.encodeColName(j) + str(i)
 		
@@ -101,21 +107,9 @@ class SodsSpreadSheet(SodsTable):
 		
 		cell_list = []
 		
-		# parse the rnage
-		i_range, j_range = self.parseCellName(name)
-		
-		# we want ranges
-		if type(i_range) != type(list()):
-			i_range = [i_range]
-		
-		if type(j_range) != type(list()):
-			j_range = [j_range]
-		
 		# loop and create the cells list
-		for i in i_range:
-			for j in j_range:
-				cell = self.encodeCellName(i, j)
-				cell_list.append(cell)
+		for cell in self.rangeIterator(name):
+			cell_list.append(cell)
 		
 		return cell_list
 	
