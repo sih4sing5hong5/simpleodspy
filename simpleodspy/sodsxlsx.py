@@ -81,13 +81,18 @@ class SodsXlsx():
 				self.table.updateOneCell(cell)
 				c = self.table.getCellAt(i, j)
 				
+				# FIXME: excel output does not support conditional formating,
+				# we do fixed formating of the conditional formating
+				color = [c.color, c.condition_color][c.condition_state]
+				background_color = [c.background_color, c.condition_background_color][c.condition_state]
+				
 				ws.cell(cell).style.font.name = c.font_family
 				ws.cell(cell).style.font.size = int(c.font_size[:-2])
-				ws.cell(cell).style.font.color = Color('FF' + c.color.upper()[1:])
+				ws.cell(cell).style.font.color = Color('FF' + color.upper()[1:])
 
 				ws.cell(cell).style.fill.fill_type = 'solid'
-				ws.cell(cell).style.fill.start_color = Color('00' + c.background_color.upper()[1:])
-				ws.cell(cell).style.fill.end_color = Color('00' + c.background_color.upper()[1:])
+				ws.cell(cell).style.fill.start_color = Color('00' + background_color.upper()[1:])
+				ws.cell(cell).style.fill.end_color = Color('00' + background_color.upper()[1:])
 
 				ws.cell(cell).style.borders.left.border_style = self.convertXlsBorderWidth(c.border_left)
 				ws.cell(cell).style.borders.left.color = self.convertXlsBorderColor(c.border_left)
@@ -121,7 +126,7 @@ if __name__ == "__main__":
 	
 	t.setStyle("A1", text = "Simple ods python")
 	t.setStyle("A1", font_size = "33pt")
-	t.setStyle("D2", font_size = "23pt", color = "#0000ff")
+	t.setStyle("D2", font_size = "23pt", color = "#ff00ff")
 	t.setStyle("A1", background_color = "#00ff00")
 	t.setStyle("A2", background_color = "#ffff00")
 	t.setStyle("A3", background_color = "#0000ff")
