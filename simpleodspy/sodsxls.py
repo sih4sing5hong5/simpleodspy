@@ -125,7 +125,7 @@ class SodsXls():
 		elif color <= 0xFFFFCC: xlscolor = 19
 		elif color <= 0xFFFFFF: xlscolor = 2
 		
-		return (xlscolor - 1)
+		return (xlscolor + 7)
 		
 	def saveXls(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''
