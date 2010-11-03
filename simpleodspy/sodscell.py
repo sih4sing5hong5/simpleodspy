@@ -26,7 +26,7 @@ class SodsCell:
 		
 		# TextProperties
 		self.font_size = "12pt"
-		self.font_family = "sans-serif"
+		self.font_family = "Arial"
 		self.color = "#000000"
 		
 		# TableCellProperties
