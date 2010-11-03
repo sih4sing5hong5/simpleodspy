@@ -28,7 +28,8 @@ class SodsXls():
 		''' init and set default values for spreadsheet elements '''
 		
 		self.table = table
-	
+		self.fonts = {}
+		
 	def convertXlsFamiliy(self, font_family):
 		''' return the font family name '''
 		
@@ -126,6 +127,20 @@ class SodsXls():
 		elif color <= 0xFFFFFF: xlscolor = 2
 		
 		return (xlscolor + 7)
+	
+	def getFont(self, name, height, color):
+		''' find a font in the fonts disctionary '''
+		
+		font_id = name + str(height) + str(color)
+		
+		if not font_id in self.fonts.keys():
+			fnt = Font()
+			fnt.name = name
+			fnt.height = height
+			fnt.colour_index = color
+			self.fonts[font_id] = fnt
+		
+		return self.fonts[font_id]
 		
 	def saveXls(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''
@@ -152,10 +167,9 @@ class SodsXls():
 				background_color = [c.background_color, c.condition_background_color][c.condition_state]
 				
 				# set xls style
-				fnt = Font()
-				fnt.name = c.font_family
-				fnt.height = 18 * int(c.font_size.replace('pt',''))
-				fnt.colour_index = self.convertXlsColor(color)
+				fnt = self.getFont(c.font_family, 
+					18 * int(c.font_size.replace('pt','')), 
+					self.convertXlsColor(color))
 				
 				borders = Borders()
 				borders.left = self.convertXlsBorderWidth(c.border_left)
