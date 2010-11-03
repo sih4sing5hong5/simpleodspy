@@ -303,12 +303,9 @@ class SodsSpreadSheet(SodsTable):
 		''' evaluate the value of a formula '''
 		
 		# remove white spaces
-		formula = re.sub(r'\s', '', formula)
+		formula = re.sub(r'\s', '', formula.upper())
 		formula = formula.replace('!', '')
-		formula = formula.replace(';', '')
 		formula = formula.replace('$', '')
-		formula = formula.replace('import', '')
-		formula = formula.replace('print', '')
 		
 		# to to simply evalute the formula as is
 		try:
@@ -342,6 +339,7 @@ class SodsSpreadSheet(SodsTable):
 		formula = formula.replace('ATAN(', 'math.atan(')
 		
 		# get all the cell names in this formula and replace them with values
+		formula = formula.replace(';', '')
 		value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValueRe, formula))
 		
 		return value
