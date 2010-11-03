@@ -103,7 +103,7 @@ class SodsOds():
 					tc = TableCell(valuetype = c.value_type, stylename = cell)
 				
 				# set ods text
-				tc.addElement(P(text = c.text))
+				tc.addElement(P(text = unicode(c.text, 'utf-8')))
 				
 				tr.addElement(tc)
 
