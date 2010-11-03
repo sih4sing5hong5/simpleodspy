@@ -70,7 +70,7 @@ class SodsXlsx():
 		ew = ExcelWriter(workbook = wb)
 		dest_filename = filename
 		ws = wb.worksheets[0]
-		ws.title = filename
+		ws.title = "sheet 1"
 
 		# make sure values are up to date
 		# loop and update the cells value
@@ -111,7 +111,7 @@ class SodsXlsx():
 				elif c.value_type == 'date':
 					ws.cell(cell).value = datetime.strptime(c.date_value, "%Y-%m-%d")
 				else:
-					ws.cell(cell).value = c.text + " "
+					ws.cell(cell).value = unicode(c.text, 'utf-8') + " "
 		
 		ew.save(filename = filename)
 		
