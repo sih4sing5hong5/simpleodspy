@@ -105,11 +105,13 @@ class SodsXlsx():
 				
 				# set xls text
 				if (c.formula):
-					ws.cell(cell).value = c.formula
+					#ws.cell(cell).value = c.formula
+					ws.cell(cell).value = unicode(c.text, 'utf-8')
 				elif c.value_type == 'float':
 					ws.cell(cell).value = c.value
 				elif c.value_type == 'date':
-					ws.cell(cell).value = datetime.strptime(c.date_value, "%Y-%m-%d")
+					#ws.cell(cell).value = datetime.strptime(c.date_value, "%Y-%m-%d")
+					ws.cell(cell).value = unicode(c.text, 'utf-8')
 				else:
 					ws.cell(cell).value = unicode(c.text, 'utf-8') + " "
 		
