@@ -62,6 +62,6 @@ t.registerFunction('MY', myCallback)
 t.setValue("B5", "=MY(B2:B3)")
 
 tw = SodsHtml(t)
-tw.saveHtml("test.html")
+tw.save("test.html")
 
 
