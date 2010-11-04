@@ -139,7 +139,7 @@ if __name__ == "__main__":
 	
 	from sodsspreadsheet import SodsSpreadSheet
 
-	t = SodsSpreadSheet()
+	t = SodsSpreadSheet(200,200)
 	
 	print "Test spreadsheet naming:"
 	print "-----------------------"
@@ -157,9 +157,11 @@ if __name__ == "__main__":
 	t.setValue("C3", "Sum of cells:")
 	t.setValue("D3", "=sum(A2:D2)")
 	
+	t.setValue("D198", "=sum(A2:D2)")
+	
 	t.setStyle("D2:D3", condition = "cell-content()<=200")
 	t.setStyle("D2:D3", condition_color = "#ff0000")
 	
 	tw = SodsOds(t)
-	tw.save("test.ods")
+	tw.save("test.ods", 200, 200)
 	

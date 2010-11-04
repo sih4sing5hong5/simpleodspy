@@ -28,7 +28,11 @@ class SodsXls():
 		''' init and set default values for spreadsheet elements '''
 		
 		self.table = table
+		
 		self.fonts = {}
+		self.borders = {}
+		self.fills = {}
+		self.styles = {}
 		
 	def convertXlsFamiliy(self, font_family):
 		''' return the font family name '''
@@ -125,10 +129,8 @@ class SodsXls():
 		
 		return (xlscolor + 7)
 	
-	def getFont(self, name, height, color):
+	def getFont(self, name, height, color, font_id):
 		''' find a font in the fonts disctionary '''
-		
-		font_id = name + str(height) + str(color)
 		
 		if not font_id in self.fonts.keys():
 			fnt = Font()
@@ -138,6 +140,51 @@ class SodsXls():
 			self.fonts[font_id] = fnt
 		
 		return self.fonts[font_id]
+	
+	def getBorder(self, c, border_id):
+		''' find a font in the fonts disctionary '''
+		
+		if not border_id in self.borders.keys():
+			borders = Borders()
+			if c.border_left != "none":
+				borders.left = self.convertXlsBorderWidth(c.border_left)
+				borders.left_colour = self.convertXlsBorderColor(c.border_left)
+			if c.border_right != "none":
+				borders.right = self.convertXlsBorderWidth(c.border_right)
+				borders.right_colour = self.convertXlsBorderColor(c.border_right)
+			if c.border_top != "none":
+				borders.top = self.convertXlsBorderWidth(c.border_top)
+				borders.top_colour = self.convertXlsBorderColor(c.border_top)
+			if c.border_bottom != "none":
+				borders.bottom = self.convertXlsBorderWidth(c.border_bottom)
+				borders.bottom_colour = self.convertXlsBorderColor(c.border_bottom)
+			self.borders[border_id] = borders
+		
+		return self.borders[border_id]
+	
+	def getFill(self, background_color, fill_id):
+		''' find a font in the fonts disctionary '''
+		
+		if not fill_id in self.fills.keys():
+			pattern = Pattern()
+			if background_color != "default":
+				pattern.pattern = Pattern.SOLID_PATTERN
+				pattern.pattern_fore_colour = self.convertXlsColor(background_color)
+			self.fills[fill_id] = pattern
+		
+		return self.fills[fill_id]
+	
+	def getStyle(self, fnt, borders, pattern, style_id):
+		''' find a font in the fonts disctionary '''
+		
+		if not style_id in self.styles.keys():
+			style = XFStyle()
+			style.font = fnt
+			style.borders = borders
+			style.pattern = pattern
+			self.styles[style_id] = style 
+		
+		return self.styles[style_id]
 		
 	def save(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''
@@ -162,35 +209,26 @@ class SodsXls():
 				# we do fixed formating of the conditional formating
 				color = [c.color, c.condition_color][c.condition_state]
 				background_color = [c.background_color, c.condition_background_color][c.condition_state]
+				name = c.font_family
+				height = 18 * int(c.font_size.replace('pt',''))
 				
 				# set xls style
-				fnt = self.getFont(c.font_family, 
-					18 * int(c.font_size.replace('pt','')), 
-					self.convertXlsColor(color))
 				
-				borders = Borders()
-				if c.border_left != "none":
-					borders.left = self.convertXlsBorderWidth(c.border_left)
-					borders.left_colour = self.convertXlsBorderColor(c.border_left)
-				if c.border_right != "none":
-					borders.right = self.convertXlsBorderWidth(c.border_right)
-					borders.right_colour = self.convertXlsBorderColor(c.border_right)
-				if c.border_top != "none":
-					borders.top = self.convertXlsBorderWidth(c.border_top)
-					borders.top_colour = self.convertXlsBorderColor(c.border_top)
-				if c.border_bottom != "none":
-					borders.bottom = self.convertXlsBorderWidth(c.border_bottom)
-					borders.bottom_colour = self.convertXlsBorderColor(c.border_bottom)
+				# get a font style
+				font_id = name + str(height) + str(color)
+				fnt = self.getFont(name, height, self.convertXlsColor(color), font_id)
 				
-				pattern = Pattern()
-				if background_color != "default":
-					pattern.pattern = Pattern.SOLID_PATTERN
-					pattern.pattern_fore_colour = self.convertXlsColor(background_color)
+				# get a border style
+				border_id = c.border_left + c.border_right + c.border_top + c.border_bottom
+				borders = self.getBorder(c, border_id)
 				
-				style = XFStyle()
-				style.font = fnt
-				style.borders = borders
-				style.pattern = pattern
+				# get a fill style
+				fill_id = background_color
+				pattern = self.getFill(background_color, fill_id)
+				
+				# get style
+				style_id = font_id + border_id + fill_id
+				style = self.getStyle(fnt, borders, pattern, style_id)
 				
 				# set xls text
 				if (c.formula):
@@ -211,7 +249,7 @@ if __name__ == "__main__":
 	
 	from sodsspreadsheet import SodsSpreadSheet
 	
-	t = SodsSpreadSheet()
+	t = SodsSpreadSheet(200, 200)
 	
 	print "Test spreadsheet naming:"
 	print "-----------------------"
