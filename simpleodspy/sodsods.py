@@ -68,11 +68,11 @@ class SodsOds():
 			odfdoc.styles.addElement(ncs)
 			
 			dcs = DateStyle(name="dcs")
-			dcs.addElement(Day())
-			dcs.addElement(Text(text = u'/'))
-			dcs.addElement(Month())
-			dcs.addElement(Text(text = u'/'))
-			dcs.addElement(Year())
+			dcs.addElement(Year(style='long'))
+			dcs.addElement(Text(text = u'-'))
+			dcs.addElement(Month(style='long'))
+			dcs.addElement(Text(text = u'-'))
+			dcs.addElement(Day(style='long'))
 			odfdoc.styles.addElement(dcs)
 			
 			for j in range(1, j_max):

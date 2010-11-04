@@ -33,6 +33,21 @@ class SodsHtml():
 %s
 </body></html>'''
 	
+	
+	def fancyNumber(self, n):
+		''' format a fancy string for a number '''
+		
+		mil = int(n / 1000000)
+		n -= mil * 1000000
+		tou = int(n / 1000)
+		n -= tou * 1000
+		
+		out = ""
+		if mil: out += str(mil) + ","
+		if tou: out += str(tou) + ","
+		out += str(n)
+		
+		return out
 		
 	def exportCellHtml(self, c, i = 0, j = 0):
 		''' export cell data as html table cell '''
@@ -55,7 +70,7 @@ class SodsHtml():
 		
 		# get cell text
 		if c.value_type == 'float':
-			text = "%0.2f" % c.value
+			text = self.fancyNumber(c.value) 
 		else:
 			text = escape(c.text) + "&nbsp;"
 		
@@ -117,7 +132,7 @@ if __name__ == "__main__":
 	t.setStyle("A1:G2", background_color = "#00ff00")
 	t.setStyle("A3:G5", background_color = "#ffff00")
 	
-	t.setValue("A2", 123.4)
+	t.setValue("A2", 1235123.4)
 	t.setValue("B2", "2010-01-01")
 	t.setValue("C2", "=0.6")
 	t.setValue("D2", "= A2 + 3")
