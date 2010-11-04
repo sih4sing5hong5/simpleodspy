@@ -21,8 +21,8 @@
 from odf.opendocument import OpenDocumentSpreadsheet
 from odf.table import Table, TableColumn, TableRow, TableCell
 from odf.style import Style, TextProperties, TableCellProperties, TableColumnProperties, Map
-from odf.number import NumberStyle, CurrencyStyle, TextStyle, Number,  Text
-from odf.text import P
+from odf.number import NumberStyle, DateStyle, CurrencyStyle, TextStyle, Number, Text, Day, Month, Year, Era
+from odf.text import P, Date
 
 from sodscell import SodsCell
 
@@ -48,7 +48,7 @@ class SodsOds():
 		odfdoc.styles.addElement(ts)
 		
 		cs = Style(name = "cs", family = "table-column")
-		cs.addElement(TableColumnProperties(columnwidth = "2.4cm", breakbefore = "auto"))
+		cs.addElement(TableColumnProperties(columnwidth = "2.8cm", breakbefore = "auto"))
 		odfdoc.automaticstyles.addElement(cs)
 
 		# create columns
@@ -61,15 +61,34 @@ class SodsOds():
 			# create new ods row
 			tr = TableRow()
 			table.addElement(tr)
-
+			
+			# create default data styles for dates and numbers
+			ncs = NumberStyle(name="ncs")
+			ncs.addElement(Number(decimalplaces="2", minintegerdigits="1", grouping="true"))
+			odfdoc.styles.addElement(ncs)
+			
+			dcs = DateStyle(name="dcs")
+			dcs.addElement(Day())
+			dcs.addElement(Text(text = u'/'))
+			dcs.addElement(Month())
+			dcs.addElement(Text(text = u'/'))
+			dcs.addElement(Year())
+			odfdoc.styles.addElement(dcs)
+			
 			for j in range(1, j_max):
 				# update the cell text and condition
 				cell = self.table.encodeColName(j) + str(i)
 				self.table.updateOneCell(cell)
 				c = self.table.getCellAt(i, j)
 				
+				# chose datastylename
+				if c.value_type == 'date':
+					datastylename = "dcs"
+				else:
+					datastylename = "ncs"
+					
 				# set ods style
-				cs = Style(name = cell, family = 'table-cell')
+				cs = Style(name = cell, family = 'table-cell', datastylename=datastylename)
 				cs.addElement(TextProperties(color = c.color, 
 					fontsize =c.font_size, fontfamily = c.font_family))
 				
@@ -83,7 +102,7 @@ class SodsOds():
 					cs.addElement(TableCellProperties(borderleft = c.border_left))
 				if c.border_right != "none":
 					cs.addElement(TableCellProperties(borderright = c.border_right))
-					
+				
 				# set ods conditional style
 				if (c.condition):
 					cns = Style(name = "cns"+cell, family = 'table-cell')

@@ -53,6 +53,12 @@ class SodsHtml():
 		border_left = c.border_left.replace('pt', 'px')
 		border_right = c.border_right.replace('pt', 'px')
 		
+		# get cell text
+		if c.value_type == 'float':
+			text = "%0.2f" % c.value
+		else:
+			text = escape(c.text) + "&nbsp;"
+		
 		# create cell string
 		# we assume text is up to date
 		out = '''
@@ -64,7 +70,7 @@ class SodsHtml():
 </td>'''.format(color, c.font_family, font_size,
 				background_color, 
 				border_top, border_bottom, border_left, border_right,
-				escape(c.text) + "&nbsp;")
+				text)
 		
 		return out
 	

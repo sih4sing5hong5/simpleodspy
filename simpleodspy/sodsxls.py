@@ -194,8 +194,10 @@ class SodsXls():
 				
 				# set xls text
 				if (c.formula):
+					style.num_format_str = '#,##0.00'
 					ws.write(i - 1, j - 1, Formula(c.formula[1:]), style)
 				elif c.value_type == 'float':
+					style.num_format_str = '#,##0.00'
 					ws.write(i - 1, j - 1, c.value, style)
 				elif c.value_type == 'date':
 					style.num_format_str = 'YYYY-MM-DD'
