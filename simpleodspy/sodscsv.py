@@ -47,7 +47,7 @@ class SodsCsv():
 		
 		return out
 		
-	def saveCsv(self, filename, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
+	def save(self, filename, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
 		''' save table in csv format '''
 		
 		# update cells text
@@ -85,5 +85,5 @@ if __name__ == "__main__":
 	t.setStyle("D2:D3", condition_color = "#ff0000")
 	
 	tw = SodsCsv(t)
-	tw.saveCsv("test.csv")
+	tw.save("test.csv")
 	

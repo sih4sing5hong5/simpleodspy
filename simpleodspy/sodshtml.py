@@ -42,6 +42,10 @@ class SodsHtml():
 		color = [c.color, c.condition_color][c.condition_state]
 		background_color = [c.background_color, c.condition_background_color][c.condition_state]
 		
+		# check for default backround color
+		if background_color == "default":
+			background_color = "#ffffff"
+		
 		# adjust values for html
 		font_size = c.font_size.replace('pt', 'px')
 		border_top = c.border_top.replace('pt', 'px')
@@ -82,7 +86,7 @@ class SodsHtml():
 		
 		return self.html_format % out
 		
-	def saveHtml(self, filename, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
+	def save(self, filename, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
 		''' save table in xml format '''
 		
 		# update cells text
@@ -120,5 +124,5 @@ if __name__ == "__main__":
 	t.setStyle("D2:D3", condition_color = "#ff0000")
 	
 	tw = SodsHtml(t)
-	tw.saveHtml("test.html")
+	tw.save("test.html")
 	

@@ -32,7 +32,7 @@ class SodsOds():
 		
 		self.table = table
 	
-	def saveOds(self, filename, i_max = None, j_max = None):
+	def save(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''
 		
 		if not i_max: i_max = self.table.i_max
@@ -72,11 +72,17 @@ class SodsOds():
 				cs = Style(name = cell, family = 'table-cell')
 				cs.addElement(TextProperties(color = c.color, 
 					fontsize =c.font_size, fontfamily = c.font_family))
-				cs.addElement(TableCellProperties(backgroundcolor = c.background_color,
-					bordertop = c.border_top,
-					borderbottom = c.border_bottom,
-					borderleft = c.border_left,
-					borderright = c.border_right))
+				
+				if c.background_color != "default":
+					cs.addElement(TableCellProperties(backgroundcolor = c.background_color))
+				if c.border_top != "none":
+					cs.addElement(TableCellProperties(bordertop = c.border_top))
+				if c.border_bottom != "none":
+					cs.addElement(TableCellProperties(borderbottom = c.border_bottom))
+				if c.border_left != "none":
+					cs.addElement(TableCellProperties(borderleft = c.border_left))
+				if c.border_right != "none":
+					cs.addElement(TableCellProperties(borderright = c.border_right))
 					
 				# set ods conditional style
 				if (c.condition):
@@ -136,5 +142,5 @@ if __name__ == "__main__":
 	t.setStyle("D2:D3", condition_color = "#ff0000")
 	
 	tw = SodsOds(t)
-	tw.saveOds("test.ods")
+	tw.save("test.ods")
 	

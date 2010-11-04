@@ -30,7 +30,7 @@ class SodsCell:
 		self.color = "#000000"
 		
 		# TableCellProperties
-		self.background_color = "#ffffff"
+		self.background_color = "default"
 		self.border_top = "none"
 		self.border_bottom = "none"
 		self.border_left = "none"

@@ -33,7 +33,7 @@ class SodsXls():
 	def convertXlsFamiliy(self, font_family):
 		''' return the font family name '''
 		
-		return 'Arial'
+		return font_family
 		
 	def convertXlsBorderWidth(self, border):
 		''' return the xls border width index '''
@@ -42,15 +42,12 @@ class SodsXls():
 		try:
 			width = int(re.search('(.+)pt', border).group(1))
 		except:
-			return Borders.NO_LINE
+			width = 0
 			
 		# conver to excel widths
-		if width > 2: xlsborder = Borders.THICK
-		elif width == 2: xlsborder = Borders.MEDIUM
-		elif width == 1: xlsborder = Borders.THIN
-		else: xlsborder = Borders.NO_LINE
+		if width > 2: width = 2
 		
-		return xlsborder
+		return [Borders.NO_LINE, Borders.THIN, Borders.THICK][width]
 	
 	def convertXlsBorderColor(self, border):
 		''' return the xls border color index '''
@@ -142,7 +139,7 @@ class SodsXls():
 		
 		return self.fonts[font_id]
 		
-	def saveXls(self, filename, i_max = None, j_max = None):
+	def save(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''
 		
 		if not i_max: i_max = self.table.i_max
@@ -172,18 +169,23 @@ class SodsXls():
 					self.convertXlsColor(color))
 				
 				borders = Borders()
-				borders.left = self.convertXlsBorderWidth(c.border_left)
-				borders.left_colour = self.convertXlsBorderColor(c.border_left)
-				borders.right = self.convertXlsBorderWidth(c.border_right)
-				borders.right_colour = self.convertXlsBorderColor(c.border_right)
-				borders.top = self.convertXlsBorderWidth(c.border_top)
-				borders.top_colour = self.convertXlsBorderColor(c.border_top)
-				borders.bottom = self.convertXlsBorderWidth(c.border_bottom)
-				borders.bottom_colour = self.convertXlsBorderColor(c.border_bottom)
+				if c.border_left != "none":
+					borders.left = self.convertXlsBorderWidth(c.border_left)
+					borders.left_colour = self.convertXlsBorderColor(c.border_left)
+				if c.border_right != "none":
+					borders.right = self.convertXlsBorderWidth(c.border_right)
+					borders.right_colour = self.convertXlsBorderColor(c.border_right)
+				if c.border_top != "none":
+					borders.top = self.convertXlsBorderWidth(c.border_top)
+					borders.top_colour = self.convertXlsBorderColor(c.border_top)
+				if c.border_bottom != "none":
+					borders.bottom = self.convertXlsBorderWidth(c.border_bottom)
+					borders.bottom_colour = self.convertXlsBorderColor(c.border_bottom)
 				
 				pattern = Pattern()
-				pattern.pattern = Pattern.SOLID_PATTERN
-				pattern.pattern_fore_colour = self.convertXlsColor(background_color)
+				if background_color != "default":
+					pattern.pattern = Pattern.SOLID_PATTERN
+					pattern.pattern_fore_colour = self.convertXlsColor(background_color)
 				
 				style = XFStyle()
 				style.font = fnt
@@ -229,4 +231,4 @@ if __name__ == "__main__":
 	t.setStyle("D2:D3", condition_color = "#ff0000")
 	
 	tw = SodsXls(t)
-	tw.saveXls("test.xls")
+	tw.save("test.xls")

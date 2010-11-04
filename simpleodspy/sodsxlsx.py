@@ -38,15 +38,12 @@ class SodsXlsx():
 		try:
 			width = int(re.search('(.+)pt', border).group(1))
 		except:
-			return Border.BORDER_NONE
+			width = 0
 			
 		# conver to excel widths
-		if width > 2: xlsborder = Border.BORDER_THICK
-		elif width == 2: xlsborder = Border.BORDER_MEDIUM
-		elif width == 1: xlsborder = Border.BORDER_THIN
-		else: xlsborder = Border.BORDER_NONE
+		if width > 2: width = 2
 		
-		return xlsborder
+		return [Border.BORDER_NONE, Border.BORDER_THIN, Border.BORDER_THICK][width]
 	
 	def convertXlsBorderColor(self, color_str):
 		''' return the xls color index '''
@@ -59,7 +56,7 @@ class SodsXlsx():
 		
 		return Color('00' + color.upper()[1:])
 		
-	def saveXlsx(self, filename, i_max = None, j_max = None):
+	def save(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''
 		
 		if not i_max: i_max = self.table.i_max
@@ -90,18 +87,23 @@ class SodsXlsx():
 				ws.cell(cell).style.font.size = int(c.font_size[:-2])
 				ws.cell(cell).style.font.color = Color('FF' + color.upper()[1:])
 
-				ws.cell(cell).style.fill.fill_type = 'solid'
-				ws.cell(cell).style.fill.start_color = Color('00' + background_color.upper()[1:])
-				ws.cell(cell).style.fill.end_color = Color('00' + background_color.upper()[1:])
-
-				ws.cell(cell).style.borders.left.border_style = self.convertXlsBorderWidth(c.border_left)
-				ws.cell(cell).style.borders.left.color = self.convertXlsBorderColor(c.border_left)
-				ws.cell(cell).style.borders.right.border_style = self.convertXlsBorderWidth(c.border_right)
-				ws.cell(cell).style.borders.left.color = self.convertXlsBorderColor(c.border_right)
-				ws.cell(cell).style.borders.top.border_style = self.convertXlsBorderWidth(c.border_top)
-				ws.cell(cell).style.borders.left.color = self.convertXlsBorderColor(c.border_top)
-				ws.cell(cell).style.borders.bottom.border_style = self.convertXlsBorderWidth(c.border_bottom)
-				ws.cell(cell).style.borders.left.color = self.convertXlsBorderColor(c.border_bottom)
+				if background_color != "default":
+					ws.cell(cell).style.fill.fill_type = 'solid'
+					ws.cell(cell).style.fill.start_color = Color('00' + background_color.upper()[1:])
+					ws.cell(cell).style.fill.end_color = Color('00' + background_color.upper()[1:])
+				
+				if c.border_left != "none":
+					ws.cell(cell).style.borders.left.border_style = self.convertXlsBorderWidth(c.border_left)
+					ws.cell(cell).style.borders.left.color = self.convertXlsBorderColor(c.border_left)
+				if c.border_right != "none":
+					ws.cell(cell).style.borders.right.border_style = self.convertXlsBorderWidth(c.border_right)
+					ws.cell(cell).style.borders.left.color = self.convertXlsBorderColor(c.border_right)
+				if c.border_top != "none":
+					ws.cell(cell).style.borders.top.border_style = self.convertXlsBorderWidth(c.border_top)
+					ws.cell(cell).style.borders.left.color = self.convertXlsBorderColor(c.border_top)
+				if c.border_bottom != "none":
+					ws.cell(cell).style.borders.bottom.border_style = self.convertXlsBorderWidth(c.border_bottom)
+					ws.cell(cell).style.borders.left.color = self.convertXlsBorderColor(c.border_bottom)
 				
 				# set xls text
 				if (c.formula):
@@ -121,30 +123,17 @@ if __name__ == "__main__":
 	
 	from sodsspreadsheet import SodsSpreadSheet
 	
-	t = SodsSpreadSheet()
+	t = SodsSpreadSheet(12,12)
 	
 	print "Test spreadsheet naming:"
 	print "-----------------------"
 	
-	t.setStyle("A1", text = "Simple ods python")
-	t.setStyle("A1", font_size = "33pt")
-	t.setStyle("D2", font_size = "23pt", color = "#ff00ff")
-	t.setStyle("A1", background_color = "#00ff00")
+	t.setStyle("A1", text = "A1")
+	t.setStyle("A2", text = "A2")
+	t.setStyle("A2", color = "#00ff00")
 	t.setStyle("A2", background_color = "#ffff00")
-	t.setStyle("A3", background_color = "#0000ff")
-	
-	t.setValue("A2", 123.4)
-	t.setValue("B2", "2010-01-01")
-	t.setValue("C2", "=0.6")
-	t.setValue("D2", "= A2 + 3")
-	
-	t.setStyle("A3:D3", border_top = "1pt solid #ff0000")
-	t.setValue("C3", "Sum of cells:")
-	t.setValue("D3", "=sum(A2:D2)")
-	
-	t.setStyle("D2:D3", condition = "cell-content()<=200")
-	t.setStyle("D2:D3", condition_color = "#ff0000")
+	t.setStyle("A2", border_top = "1pt solid #000000")
 	
 	tw = SodsXlsx(t)
-	tw.saveXlsx("test.xlsx")
+	tw.save("test.xlsx")
 	
