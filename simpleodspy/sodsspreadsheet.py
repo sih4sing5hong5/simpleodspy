@@ -259,7 +259,7 @@ class SodsSpreadSheet(SodsTable):
 		
 		return self.getOneCellValue(name)
 	
-	def functionCallback(self, f, args_string):
+	def functionCallbackWrapper(self, f, args_string):
 		''' return the updated float value of a cell input name is re group '''
 		
 		# we work with a string, 
@@ -315,7 +315,7 @@ class SodsSpreadSheet(SodsTable):
 		
 		# look for user defined functions and replace them with user data
 		for f_name, f_callback in self.registered_functions:
-			formula = re.sub(f_name + '[(](.+)[)]', lambda f: self.functionCallback(f_callback, f), formula)
+			formula = re.sub(f_name + '[(](.+)[)]', lambda f: self.functionCallbackWrapper(f_callback, f), formula)
 		
 		# check for ranges e.g. 'A2:G3' and replace them with (A2,A3 ... G3) tupple
 		formula = re.sub('[A-Z]+[0-9]+:[A-Z]+[0-9]+', 
