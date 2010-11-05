@@ -31,7 +31,42 @@ class SodsOds():
 		''' init and set default values for spreadsheet elements '''
 		
 		self.table = table
+		self.styles = {}
 	
+	def getStyle(self, c, cell, datastylename, style_id, odfdoc):
+		''' get a style_name by style_id '''
+		
+		if not style_id in self.styles.keys():
+			cs = Style(name = cell, family = 'table-cell', datastylename=datastylename)
+			cs.addElement(TextProperties(color = c.color, 
+				fontsize =c.font_size, fontfamily = c.font_family))
+			
+			if c.background_color != "default":
+				cs.addElement(TableCellProperties(backgroundcolor = c.background_color))
+			if c.border_top != "none":
+				cs.addElement(TableCellProperties(bordertop = c.border_top))
+			if c.border_bottom != "none":
+				cs.addElement(TableCellProperties(borderbottom = c.border_bottom))
+			if c.border_left != "none":
+				cs.addElement(TableCellProperties(borderleft = c.border_left))
+			if c.border_right != "none":
+				cs.addElement(TableCellProperties(borderright = c.border_right))
+			
+			# set ods conditional style
+			if (c.condition):
+				cns = Style(name = "cns"+cell, family = 'table-cell')
+				cns.addElement(TextProperties(color = c.condition_color))
+				cns.addElement(TableCellProperties(backgroundcolor = c.condition_background_color))
+				odfdoc.styles.addElement(cns)
+				
+				cs.addElement(Map(condition = c.condition, applystylename = "cns"+cell))
+				
+			odfdoc.automaticstyles.addElement(cs)
+			
+			self.styles[style_id] = cell
+		
+		return self.styles[style_id]
+		
 	def save(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''
 		
@@ -86,46 +121,33 @@ class SodsOds():
 					datastylename = "dcs"
 				else:
 					datastylename = "ncs"
-					
-				# set ods style
-				cs = Style(name = cell, family = 'table-cell', datastylename=datastylename)
-				cs.addElement(TextProperties(color = c.color, 
-					fontsize =c.font_size, fontfamily = c.font_family))
 				
-				if c.background_color != "default":
-					cs.addElement(TableCellProperties(backgroundcolor = c.background_color))
-				if c.border_top != "none":
-					cs.addElement(TableCellProperties(bordertop = c.border_top))
-				if c.border_bottom != "none":
-					cs.addElement(TableCellProperties(borderbottom = c.border_bottom))
-				if c.border_left != "none":
-					cs.addElement(TableCellProperties(borderleft = c.border_left))
-				if c.border_right != "none":
-					cs.addElement(TableCellProperties(borderright = c.border_right))
-				
-				# set ods conditional style
+				# get cell style id
 				if (c.condition):
-					cns = Style(name = "cns"+cell, family = 'table-cell')
-					cns.addElement(TextProperties(color = c.condition_color))
-					cns.addElement(TableCellProperties(backgroundcolor = c.condition_background_color))
-					odfdoc.styles.addElement(cns)
-					
-					cs.addElement(Map(condition = c.condition, applystylename = "cns"+cell))
+					style_id = (datastylename + c.color + c.font_size + c.font_family + 
+						c.background_color + c.border_top + c.border_bottom + 
+						c.border_left + c.border_right + 
+						c.condition_color + c.condition_background_color)
+				else:
+					style_id = (datastylename + c.color + c.font_size + c.font_family + 
+						c.background_color + c.border_top + c.border_bottom + 
+						c.border_left + c.border_right)
 				
-				odfdoc.automaticstyles.addElement(cs)
+				# set ods style
+				style_name = self.getStyle(c, cell, datastylename, style_id, odfdoc)
 				
 				# create new ods cell
 				if (c.formula):
 					tc = TableCell(valuetype = c.value_type, 
-						formula = c.formula, value = c.value, stylename = cell)
+						formula = c.formula, value = c.value, stylename = style_name)
 				elif (c.value_type == 'date'):
 					tc = TableCell(valuetype = c.value_type, 
-						datevalue = c.date_value, stylename = cell)
+						datevalue = c.date_value, stylename = style_name)
 				elif (c.value_type == 'float'):
 					tc = TableCell(valuetype = c.value_type, 
-						value = c.value, stylename = cell)
+						value = c.value, stylename = style_name)
 				else:
-					tc = TableCell(valuetype = c.value_type, stylename = cell)
+					tc = TableCell(valuetype = c.value_type, stylename = style_name)
 				
 				# set ods text
 				tc.addElement(P(text = unicode(c.text, 'utf-8')))
@@ -138,29 +160,36 @@ class SodsOds():
 if __name__ == "__main__":
 	
 	from sodsspreadsheet import SodsSpreadSheet
-
-	t = SodsSpreadSheet(200,200)
+	
+	t = SodsSpreadSheet(200, 200)
 	
 	print "Test spreadsheet naming:"
 	print "-----------------------"
 	
-	t.setStyle("A1", text = "Simple ods python")
+	t.setStyle("A1", text = "Hello world")
 	t.setStyle("A1:G2", background_color = "#00ff00")
 	t.setStyle("A3:G5", background_color = "#ffff00")
 	
 	t.setValue("A2", 123.4)
 	t.setValue("B2", "2010-01-01")
-	t.setValue("C2", "=0.6")
-	t.setValue("D2", "= A2 + 3")
+	t.setValue("C2", "0.6")
+	
+	t.setValue("C5", 0.6)
+	t.setValue("C6", 0.6)
+	t.setValue("C7", 0.8)
+	t.setValue("C8", 0.8)
+	t.setValue("C9", "=AVERAGE(C5:C8)")
+	t.setValue("C10", "=SUM(C5:C8)")
+	
+	t.setValue("D2", "= SIN(PI()/2)")
+	#t.setValue("D10", "=IF(A2>3,C7,C9)")
 	
 	t.setStyle("A3:D3", border_top = "1pt solid #ff0000")
 	t.setValue("C3", "Sum of cells:")
-	t.setValue("D3", "=sum(A2:D2)")
+	t.setValue("D3", "=SUM($A$2:D2)")
 	
-	t.setValue("D198", "=sum(A2:D2)")
-	
-	t.setStyle("D2:D3", condition = "cell-content()<=200")
-	t.setStyle("D2:D3", condition_color = "#ff0000")
+	t.setStyle("D2:D3", condition = "cell-content()<=100")
+	t.setStyle("D2:D3", condition_background_color = "#ff0000")
 	
 	tw = SodsOds(t)
 	tw.save("test.ods", 200, 200)
