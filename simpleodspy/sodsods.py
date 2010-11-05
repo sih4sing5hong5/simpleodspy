@@ -182,7 +182,7 @@ if __name__ == "__main__":
 	t.setValue("C10", "=SUM(C5:C8)")
 	
 	t.setValue("D2", "= SIN(PI()/2)")
-	#t.setValue("D10", "=IF(A2>3,C7,C9)")
+	t.setValue("D10", "=IF(A2>3;C7;C9)")
 	
 	t.setStyle("A3:D3", border_top = "1pt solid #ff0000")
 	t.setValue("C3", "Sum of cells:")

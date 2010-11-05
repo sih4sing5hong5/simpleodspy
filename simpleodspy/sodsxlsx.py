@@ -123,16 +123,35 @@ if __name__ == "__main__":
 	
 	from sodsspreadsheet import SodsSpreadSheet
 	
-	t = SodsSpreadSheet(12,12)
+	t = SodsSpreadSheet(200,200)
 	
 	print "Test spreadsheet naming:"
 	print "-----------------------"
 	
-	t.setStyle("A1", text = "A1")
-	t.setStyle("A2", text = "A2")
-	t.setStyle("A2", color = "#00ff00")
-	t.setStyle("A2", background_color = "#ffff00")
-	t.setStyle("A2", border_top = "1pt solid #000000")
+	t.setStyle("A1", text = "Hello world")
+	t.setStyle("A1:G2", background_color = "#00ff00")
+	t.setStyle("A3:G5", background_color = "#ffff00")
+	
+	t.setValue("A2", 123.4)
+	t.setValue("B2", "2010-01-01")
+	t.setValue("C2", "0.6")
+	
+	t.setValue("C5", 0.6)
+	t.setValue("C6", 0.6)
+	t.setValue("C7", 0.8)
+	t.setValue("C8", 0.8)
+	t.setValue("C9", "=AVERAGE(C5:C8)")
+	t.setValue("C10", "=SUM(C5:C8)")
+	
+	t.setValue("D2", "= SIN(PI()/2)")
+	t.setValue("D10", "=IF(A2>3;C7;C9)")
+	
+	t.setStyle("A3:D3", border_top = "1pt solid #ff0000")
+	t.setValue("C3", "Sum of cells:")
+	t.setValue("D3", "=SUM($A$2:D2)")
+	
+	t.setStyle("D2:D3", condition = "cell-content()<=100")
+	t.setStyle("D2:D3", condition_background_color = "#ff0000")
 	
 	tw = SodsXlsx(t)
 	tw.save("test.xlsx")

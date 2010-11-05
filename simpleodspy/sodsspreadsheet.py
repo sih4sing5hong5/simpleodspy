@@ -36,7 +36,6 @@ class SodsSpreadSheet(SodsTable):
 		# add functions
 		self.registerFunction('AVERAGE', self.averageCallback)
 		self.registerFunction('IF', self.ifCallback)
-		self.registerFunction('PI', self.piCallback)
 		
 	def registerFunction(self, function_name, function_callback):
 		''' register a spreadsheet function '''
@@ -266,10 +265,15 @@ class SodsSpreadSheet(SodsTable):
 		
 		# we work with a string, 
 		# get the re.group args string
-		args_string = args_string.group(1)
+		args = args_string.group(1)
 		
 		# return a string that represents the function value
-		return f(args_string)
+		try:
+			ans = f(args)
+		except:
+			ans = args_string.group(0)
+		
+		return ans
 		
 	def averageCallback(self, args_string):
 		''' return the average value of cell group '''
@@ -281,25 +285,20 @@ class SodsSpreadSheet(SodsTable):
 		''' return the result of an if function '''
 		
 		# get the if funtion args: IF(condion, val_true, val_false)
-		arg_list = args_string.split(",")
+		args = args_string.replace(';',',')
+		args_list = args.split(',')
 		
-		if len(arg_list) == 3:
+		if len(args_list) == 3:
 			try:
-				if self.evaluateFormula(arg_list[0]):
-					return str(self.evaluateFormula(arg_list[1]))
+				if self.evaluateFormula(args_list[0]):
+					return str(self.evaluateFormula(args_list[1]))
 				else:
-					return str(self.evaluateFormula(arg_list[2]))
+					return str(self.evaluateFormula(args_list[2]))
 			except:
 				pass
 		
 		return "!ERR"
 	
-	def piCallback(self, args_string):
-		''' return the average value of cell group '''
-		
-		# return a string that represents the function value
-		return "PI"
-		
 	def getOneCellValue(self, name):
 		''' return the updated float value of a cell '''
 		
@@ -331,6 +330,7 @@ class SodsSpreadSheet(SodsTable):
 		formula = re.sub(r'\s', '', formula.upper())
 		formula = formula.replace('!', '')
 		formula = formula.replace('$', '')
+		formula = formula.replace('PI()', 'PI')
 		
 		# to to simply evalute the formula as is
 		try:
@@ -341,7 +341,7 @@ class SodsSpreadSheet(SodsTable):
 		# look for user defined functions and replace them with user data
 		for f_name, f_callback in self.registered_functions:
 			formula = re.sub(f_name + '[(](.+)[)]', lambda f: self.functionCallbackWrapper(f_callback, f), formula)
-		
+			
 		# check for ranges e.g. 'A2:G3' and replace them with (A2,A3 ... G3) tupple
 		formula = re.sub('[A-Z]+[0-9]+:[A-Z]+[0-9]+', 
 			self.getRangeString, formula)
@@ -483,7 +483,7 @@ if __name__ == "__main__":
 	t.setValue("C9", "=AVERAGE(C5:C8)")
 	t.setValue("C10", "=SUM(C5:C8)")
 	
-	t.setValue("D2", "=SIN(PI/2)")
+	t.setValue("D2", "=SIN(PI()/2)")
 	t.setValue("D10", "=IF(A2>3,C7,C9)")
 	
 	t.setStyle("A3:D3", border_top = "1pt solid #ff0000")
