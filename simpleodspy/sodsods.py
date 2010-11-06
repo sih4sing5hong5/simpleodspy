@@ -18,7 +18,10 @@
 # Copyright (C) 2010 Yaacov Zamir (2010) <kzamir@walla.co.il>
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
+import sys
+
 from odf.opendocument import OpenDocumentSpreadsheet
+from odf.opendocument import load
 from odf.table import Table, TableColumn, TableRow, TableCell
 from odf.style import Style, TextProperties, TableCellProperties, TableColumnProperties, Map
 from odf.number import NumberStyle, DateStyle, CurrencyStyle, TextStyle, Number, Text, Day, Month, Year, Era
@@ -67,6 +70,28 @@ class SodsOds():
 		
 		return self.styles[style_id]
 		
+	def load(self, filename):
+		''' load a table in ods format '''
+		doc = load(filename)
+		
+		i, j = 0, 0
+		for row in doc.getElementsByType(TableRow):
+			i += 1
+			for cell in row.getElementsByType(TableCell):
+				j += 1
+				print i, j
+				print "    valuetype", cell.getAttribute('valuetype')
+				print "    formula", cell.getAttribute('formula')
+				print "    stylename", cell.getAttribute('stylename')
+				print "    datevalue", cell.getAttribute('datevalue')
+				print "    value", cell.getAttribute('value')
+				#for text in cell.getElementsByType(P):
+				#	print "text", text.getAttribute('text')
+					
+				style = doc.getStyleByName(cell.getAttribute('stylename'))
+				for p in style.getElementsByType(TextProperties):
+					print "    fontfamily", p.getAttribute('fontfamily')
+					
 	def save(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''
 		
@@ -192,5 +217,9 @@ if __name__ == "__main__":
 	t.setStyle("D2:D3", condition_background_color = "#ff0000")
 	
 	tw = SodsOds(t)
-	tw.save("test.ods", 200, 200)
+	tw.save("test.ods", 20, 20)
 	
+	print "Test load:"
+	print "----------"
+	
+	tw.load("test.ods")
