@@ -19,6 +19,7 @@
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
 import sys
+from xml.sax.saxutils import unescape
 
 from odf.opendocument import OpenDocumentSpreadsheet
 from odf.opendocument import load
@@ -72,26 +73,93 @@ class SodsOds():
 		
 	def load(self, filename):
 		''' load a table in ods format '''
+		
+		# read the file
 		doc = load(filename)
 		
-		i, j = 0, 0
+		# loop on all rows and columns
+		i = 0
 		for row in doc.getElementsByType(TableRow):
+			j = 1
 			i += 1
 			for cell in row.getElementsByType(TableCell):
-				j += 1
-				print i, j
-				print "    valuetype", cell.getAttribute('valuetype')
-				print "    formula", cell.getAttribute('formula')
-				print "    stylename", cell.getAttribute('stylename')
-				print "    datevalue", cell.getAttribute('datevalue')
-				print "    value", cell.getAttribute('value')
-				#for text in cell.getElementsByType(P):
-				#	print "text", text.getAttribute('text')
+				
+				# creat a new cell
+				c = SodsCell()
+				
+				try:
+					numbercolumnsrepeated = int(cell.getAttribute('numbercolumnsrepeated'))
+				except:
+					numbercolumnsrepeated = 1
+				
+				# get cell data
+				try:
+					c.text = unescape(str(cell.firstChild))
+				except:
+					c.text = unescape(str(cell.firstChild.firstChild))
 					
-				style = doc.getStyleByName(cell.getAttribute('stylename'))
-				for p in style.getElementsByType(TextProperties):
-					print "    fontfamily", p.getAttribute('fontfamily')
+				c.value_type = cell.getAttribute('valuetype')
+				c.formula = cell.getAttribute('formula')
+				if c.formula:
+					c.formula = unescape(c.formula)
+				c.date_value = cell.getAttribute('datevalue')
+				c.value = cell.getAttribute('value')
+				
+				stylename = cell.getAttribute('stylename')
+				if stylename:
+					style = doc.getStyleByName(stylename)
+					datastyle = style.getAttribute('datastylename')
+				
+					for p in style.getElementsByType(TextProperties):
+						c.font_family = p.getAttribute('fontfamily')
+						c.font_size = p.getAttribute('fontsize')
+						c.color = p.getAttribute('color')
+				
+					for p in style.getElementsByType(TableCellProperties):
+						if stylename == 'ce3':
+							print "  -- ce3", doc.getStyleByName(stylename)
+							print "  -- ce3 x ",  p.getAttribute('bordertop')
+							
+						c.background_color = p.getAttribute('backgroundcolor')
+						c.border_top = p.getAttribute('bordertop')
+						if not c.border_top:
+							c.border_top = "none"
+						c.border_bottom = p.getAttribute('borderbottom')
+						if not c.border_bottom:
+							c.border_bottom = "none"
+						c.border_left = p.getAttribute('borderleft')
+						if not c.border_left:
+							c.border_left = "none"
+						c.border_right = p.getAttribute('borderright')
+						if not c.border_right:
+							c.border_right = "none"
+						print "  -- ce3 w ",  c.border_top
+						
+					for p in style.getElementsByType(Map):
+						c.condition = p.getAttribute('condition')
+						if c.condition:
+							c.condition = unescape(c.condition)
 					
+						applystylename = p.getAttribute('applystylename')
+						applystyle = doc.getStyleByName(applystylename)
+					
+						for cp in style.getElementsByType(TextProperties):
+							c.condition_color = cp.getAttribute('color')
+					
+						for cp in style.getElementsByType(TableCellProperties):
+							c.condition_background_color = cp.getAttribute('backgroundcolor')
+				
+				# check for sodsOds formulas (starting with !)
+				if len(c.text) > 0 and c.text[0] == '!':
+					c.formula = c.text
+					c.value_type = "float"
+				
+				# insert cell to table
+				while numbercolumnsrepeated > 0:
+					self.table.setCellAt(i, j, c)
+					j += 1
+					numbercolumnsrepeated -= 1
+				
 	def save(self, filename, i_max = None, j_max = None):
 		''' save table in ods format '''
 		
@@ -186,7 +254,7 @@ if __name__ == "__main__":
 	
 	from sodsspreadsheet import SodsSpreadSheet
 	
-	t = SodsSpreadSheet(200, 200)
+	t = SodsSpreadSheet(12, 12)
 	
 	print "Test spreadsheet naming:"
 	print "-----------------------"
@@ -217,9 +285,12 @@ if __name__ == "__main__":
 	t.setStyle("D2:D3", condition_background_color = "#ff0000")
 	
 	tw = SodsOds(t)
-	tw.save("test.ods", 20, 20)
+	#tw.save("test.ods")
 	
 	print "Test load:"
 	print "----------"
 	
+	t2 = SodsSpreadSheet(12, 12)
+	tw = SodsOds(t2)
 	tw.load("test.ods")
+	t2.saveXml('text.xml')
