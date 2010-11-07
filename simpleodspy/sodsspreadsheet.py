@@ -193,7 +193,7 @@ class SodsSpreadSheet(SodsTable):
 				c.date_value = None
 			
 				# check cell type
-				if type(value) == type(str()) and len(value) > 0 and value[0] == '=':
+				if type(value) == type(str()) and len(value) > 0 and value[0] in ['=', '!']:
 					c.value_type = "float"
 					c.formula = value
 				elif self.isFloat(value):

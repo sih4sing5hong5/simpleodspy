@@ -106,7 +106,7 @@ class SodsXlsx():
 					ws.cell(cell).style.borders.left.color = self.convertXlsBorderColor(c.border_bottom)
 				
 				# set xls text
-				if (c.formula):
+				if (c.formula and c.formula[0] == '='):
 					#ws.cell(cell).value = c.formula
 					ws.cell(cell).value = unicode(c.text, 'utf-8')
 				elif c.value_type == 'float':

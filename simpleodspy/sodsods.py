@@ -82,6 +82,19 @@ class SodsOds():
 		out = re.sub('([0-9.]+)cm', lambda s: str(int(float(s.group(1)) * 72.0 / 2.54 + .5)) + "pt", out)
 		
 		return out
+	
+	def cleanFormual(self, string):
+		''' clean odf formula '''
+		
+		if not string: return None
+		
+		out = unescape(string[3:])
+		out = out.replace(' ', '')
+		out = out.replace('[.', '')
+		out = out.replace(']', '')
+		out = out.replace(':.', ':')
+		
+		return out
 		
 	def load(self, filename):
 		''' load a table in ods format '''
@@ -106,14 +119,19 @@ class SodsOds():
 				
 				# get cell data
 				try:
-					c.text = unescape(str(cell.firstChild.firstChild))
+					c.text = cell.firstChild.firstChild
 				except:
-					c.text = unescape(str(cell.firstChild))
+					c.text = cell.firstChild
 					
+				if not c.text:
+					c.text = ""
+				else:
+					c.text = unescape(str(c.text))
+				
 				c.value_type = cell.getAttribute('valuetype')
 				c.formula = cell.getAttribute('formula')
 				if c.formula:
-					c.formula = unescape(c.formula)
+					c.formula = self.cleanFormual(c.formula)
 				c.date_value = cell.getAttribute('datevalue')
 				c.value = cell.getAttribute('value')
 				
@@ -124,9 +142,15 @@ class SodsOds():
 				
 					for p in style.getElementsByType(TextProperties):
 						c.font_family = p.getAttribute('fontfamily')
+						if not c.font_family:
+							c.font_family = "Arial"
 						c.font_size = self.translateToPt(p.getAttribute('fontsize'))
+						if not c.font_size:
+							c.font_size = "12pt"
 						c.color = p.getAttribute('color')
-				
+						if not c.color:
+							c.color = "#000000"
+							
 					for p in style.getElementsByType(TableCellProperties):
 							
 						c.background_color = p.getAttribute('backgroundcolor')
@@ -238,7 +262,7 @@ class SodsOds():
 				style_name = self.getStyle(c, cell, datastylename, style_id, odfdoc)
 				
 				# create new ods cell
-				if (c.formula):
+				if (c.formula and c.formula[0] == '='):
 					tc = TableCell(valuetype = c.value_type, 
 						formula = c.formula, value = c.value, stylename = style_name)
 				elif (c.value_type == 'date'):
