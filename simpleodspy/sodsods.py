@@ -20,6 +20,7 @@
 
 import sys
 from xml.sax.saxutils import unescape
+import re
 
 from odf.opendocument import OpenDocumentSpreadsheet
 from odf.opendocument import load
@@ -70,6 +71,17 @@ class SodsOds():
 			self.styles[style_id] = cell
 		
 		return self.styles[style_id]
+	
+	def translateToPt(self, string):
+		''' translte inch and cm to pt '''
+		
+		if not string: return None
+		
+		out = unescape(string)
+		out = re.sub('([0-9.]+)in', lambda s: str(int(float(s.group(1)) * 72.0 + .5)) + "pt", out)
+		out = re.sub('([0-9.]+)cm', lambda s: str(int(float(s.group(1)) * 72.0 / 2.54 + .5)) + "pt", out)
+		
+		return out
 		
 	def load(self, filename):
 		''' load a table in ods format '''
@@ -94,9 +106,9 @@ class SodsOds():
 				
 				# get cell data
 				try:
-					c.text = unescape(str(cell.firstChild))
-				except:
 					c.text = unescape(str(cell.firstChild.firstChild))
+				except:
+					c.text = unescape(str(cell.firstChild))
 					
 				c.value_type = cell.getAttribute('valuetype')
 				c.formula = cell.getAttribute('formula')
@@ -112,28 +124,24 @@ class SodsOds():
 				
 					for p in style.getElementsByType(TextProperties):
 						c.font_family = p.getAttribute('fontfamily')
-						c.font_size = p.getAttribute('fontsize')
+						c.font_size = self.translateToPt(p.getAttribute('fontsize'))
 						c.color = p.getAttribute('color')
 				
 					for p in style.getElementsByType(TableCellProperties):
-						if stylename == 'ce3':
-							print "  -- ce3", doc.getStyleByName(stylename)
-							print "  -- ce3 x ",  p.getAttribute('bordertop')
 							
 						c.background_color = p.getAttribute('backgroundcolor')
-						c.border_top = p.getAttribute('bordertop')
+						c.border_top = self.translateToPt(p.getAttribute('bordertop'))
 						if not c.border_top:
 							c.border_top = "none"
-						c.border_bottom = p.getAttribute('borderbottom')
+						c.border_bottom = self.translateToPt(p.getAttribute('borderbottom'))
 						if not c.border_bottom:
 							c.border_bottom = "none"
-						c.border_left = p.getAttribute('borderleft')
+						c.border_left = self.translateToPt(p.getAttribute('borderleft'))
 						if not c.border_left:
 							c.border_left = "none"
-						c.border_right = p.getAttribute('borderright')
+						c.border_right = self.translateToPt(p.getAttribute('borderright'))
 						if not c.border_right:
 							c.border_right = "none"
-						print "  -- ce3 w ",  c.border_top
 						
 					for p in style.getElementsByType(Map):
 						c.condition = p.getAttribute('condition')
