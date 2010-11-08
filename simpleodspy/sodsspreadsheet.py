@@ -495,5 +495,6 @@ if __name__ == "__main__":
 	
 	t.updateCell("A1:G3")
 	
-	t.saveXml("test.xml") 
+	print t.getCell("D3").text
+	print t.getCell("D3").condition_state
 	
