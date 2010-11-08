@@ -34,16 +34,6 @@ class SodsTable:
 		self.i_max = i_max
 		self.j_max = j_max
 		
-		# dtd for the xml import/export
-		# TODO: add dtd or scheme
-		self.dtd= ''' '''
-		
-		# takes dtd, cells
-		self.xml_format = '''<?xml version="1.0" encoding="UTF-8"?>
-%s
-<table>
-%s</table>'''
-		
 	def getCellAt(self, i, j):
 		''' get the cell object in i,j '''
 		
@@ -156,62 +146,6 @@ class SodsTable:
 		
 		# return cell to table
 		self.setCellAt(i, j, c)
-	
-	def exportXml(self, i_max = None, j_max = None):
-		''' export table in xml format '''
-		
-		if not i_max: i_max = self.i_max
-		if not j_max: j_max = self.j_max
-		
-		out = ""
-		
-		for i in range(1, i_max):
-			for j in range(1, j_max):
-				out += self.getCellAt(i,j).exportXml(i,j)
-		
-		return self.xml_format % (self.dtd, out)
-		
-	def loadXml(self, xml_text):
-		''' load cells from text in xml format '''
-		
-		# get the cells elements from our xml file
-		xml_table = ElementTree.XML(xml_text)
-		
-		# loop on all the cells in xml file
-		for xml_cell in xml_table:
-			# FIXME: we assume that all the cell element are in the right
-			# order
-			
-			# get i, j
-			i, j = int(xml_cell[0].text), int(xml_cell[1].text)
-			
-			# get cell
-			c = SodsCell()
-			
-			c.color = xml_cell[2].text
-			c.font_family = xml_cell[3].text
-			c.font_size = xml_cell[4].text
-			
-			c.background_color = xml_cell[5].text
-			c.border_top = xml_cell[6].text
-			c.border_bottom = xml_cell[7].text
-			c.border_left = xml_cell[8].text
-			c.border_right = xml_cell[9].text
-	
-			if xml_cell[10].text:
-				c.text = unescape(xml_cell[10].text)
-			c.value_type = xml_cell[11].text
-			c.value = [None, xml_cell[12].text][xml_cell[12].text != 'None']
-			c.formula = [None, unescape(xml_cell[13].text)][xml_cell[13].text != 'None']
-			c.date_value = [None, xml_cell[14].text][xml_cell[14].text != 'None']
-	
-			c.condition = [None, unescape(xml_cell[15].text)][xml_cell[15].text != 'None']
-			c.condition_state = eval(xml_cell[16].text)
-			c.condition_color = xml_cell[17].text
-			c.condition_background_color = xml_cell[18].text
-			
-			# insert cell to table
-			self.setCellAt(i, j, c)
 			
 	def copy(self):
 		''' return a copy of the table '''
@@ -225,15 +159,4 @@ if __name__ == "__main__":
 	t.setAt(1,1, text = "hello world")
 	t.setAt(1,range(1,3), background_color = "#00ff00")
 	
-	print "Test table export:"
-	print "------------------------------"
-	
-	file("test.xml","w").write(t.exportXml())
-	
-	print "Test table xml load from file:"
-	print "------------------------------"
-	
-	t2 = SodsTable()
-	t2.loadXml(file("test.xml").read())
-	file("test2.xml","w").write(t2.exportXml(6,6))
 	

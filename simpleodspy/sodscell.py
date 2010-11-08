@@ -49,77 +49,15 @@ class SodsCell:
 		self.condition_color = "#000000"
 		self.condition_background_color = "#ffffff"
 	
-	def exportXml(self, i = 0, j = 0):
-		''' export cell data as xml table cell '''
-		
-		text = escape(self.text)
-		
-		if self.formula:
-			formula = escape(self.formula)
-		else:
-			formula = 'None'
-		if self.condition:
-			condition = escape(self.condition)
-		else:
-			condition = 'None'
-		
-		# create cell string
-		out = '''
-<cell>
-	<i>{0}</i>
-	<j>{1}</j>
-	
-	<color>{2}</color>
-	<font_family>{3}</font_family>
-	<font_size>{4}</font_size>
-	
-	<background_color>{5}</background_color>
-	<border_top>{6}</border_top>
-	<border_bottom>{7}</border_bottom>
-	<border_left>{8}</border_left>
-	<border_right>{9}</border_right>
-	
-	<text>{10}</text>
-	<value_type>{11}</value_type>
-	<value>{12}</value>
-	<formula>{13}</formula>
-	<date_value>{14}</date_value>
-	
-	<condition>{15}</condition>
-	<condition_state>{16}</condition_state>
-	<condition_color>{17}</condition_color>
-	<condition_background_color>{18}</condition_background_color>
-</cell>'''.format(i, j,
-				self.color, self.font_family, self.font_size,
-				self.background_color, 
-				self.border_top, self.border_bottom, 
-				self.border_left, self.border_right,
-				text, self.value_type, self.value, 
-				formula, self.date_value, 
-				condition, self.condition_state, 
-				self.condition_color, self.condition_background_color)
-		
-		return out
-
 if __name__ == "__main__":
 	c = SodsCell()
 
 	print "Test html export:"
 	print "-----------------"
 	
-	print c.exportHtml()
 	c.text = "hello world"
-	print c.exportHtml()
 	c.condition_state = True
-	print c.exportHtml()
-
-	print "Test xml export:"
-	print "-----------------"
-	
-	print c.exportXml()
 	c.text = "hello world"
 	c.value = 123.3
-	print c.exportXml()
 	c.condition_state = False
-	print c.exportXml()
 

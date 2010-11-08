@@ -5,6 +5,7 @@ setup.py
 simpleodspy/__init__.py
 simpleodspy/sodsods.py
 simpleodspy/sodshtml.py
+simpleodspy/sodsxml.py
 simpleodspy/sodscsv.py
 simpleodspy/sodsxls.py
 simpleodspy/sodsxlsx.py
