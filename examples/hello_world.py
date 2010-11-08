@@ -42,12 +42,15 @@ t.setStyle("B1:B5", condition = "cell-content()<=125")
 t.setStyle("B1:B5", condition_color = "#ff0000")
 
 # export
-t.saveXml("test.xml")
+from simpleodspy.sodsxml import SodsXml
+tw = SodsXml(t)
+tw.save("test.xml")
 
 # import
 t2 = SodsSpreadSheet()
-t2.loadXmlfile("test.xml")
-t2.saveXml("test2.xml")
+tw = SodsXml(t2)
+tw.load("test.xml")
+tw.save("test2.xml")
 
 from simpleodspy.sodshtml import SodsHtml
 

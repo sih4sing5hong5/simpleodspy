@@ -19,8 +19,6 @@
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
 from copy import deepcopy
-from xml.etree import ElementTree
-from xml.sax.saxutils import unescape
 
 from sodscell import SodsCell
 

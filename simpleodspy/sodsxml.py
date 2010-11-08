@@ -19,6 +19,10 @@
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
 from xml.sax.saxutils import escape
+from xml.etree import ElementTree
+from xml.sax.saxutils import unescape
+
+from sodscell import SodsCell
 
 class SodsXml():
 	def __init__(self, table, i_max = 30, j_max = 30):
@@ -102,20 +106,8 @@ class SodsXml():
 				out += self.exportCellXml(self.table.getCellAt(i,j), i,j)
 		
 		return self.xml_format % (self.dtd, out)
-		
-	def save(self, filename, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
-		''' save table in xml format '''
-		
-		# update cells text
-		self.table.updateTable(i_max, j_max)
-		
-		# if filename is - print to stdout
-		if filename == '-':
-			print self.exportXml(i_max, j_max)
-		else:
-			file(filename,"w").write(self.exportXml(i_max, j_max))
-		
-	def load(self, xml_text):
+	
+	def importXml(self, xml_text):
 		''' load cells from text in xml format '''
 		
 		# get the cells elements from our xml file
@@ -156,7 +148,24 @@ class SodsXml():
 			
 			# insert cell to table
 			self.table.setCellAt(i, j, c)
-			
+		
+	def save(self, filename, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
+		''' save table in xml format '''
+		
+		# update cells text
+		self.table.updateTable(i_max, j_max)
+		
+		# if filename is - print to stdout
+		if filename == '-':
+			print self.exportXml(i_max, j_max)
+		else:
+			file(filename,"w").write(self.exportXml(i_max, j_max))
+		
+	def load(self, filename):
+		''' load table in xml format '''
+		
+		self.importXml(file(filename).read())
+		
 if __name__ == "__main__":
 	
 	from sodsspreadsheet import SodsSpreadSheet
