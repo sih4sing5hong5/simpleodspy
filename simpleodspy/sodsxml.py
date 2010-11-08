@@ -192,5 +192,5 @@ if __name__ == "__main__":
 	t.setStyle("D2:D3", condition_background_color = "#ff0000")
 	
 	tw = SodsXml(t)
-	tw.save("test.html")
+	tw.save("test.xml")
 	

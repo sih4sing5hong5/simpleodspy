@@ -325,4 +325,6 @@ if __name__ == "__main__":
 	t2 = SodsSpreadSheet(12, 12)
 	tw = SodsOds(t2)
 	tw.load("test.ods")
-	t2.saveXml('text.xml')
+	
+	print t2.getCell("D3").text
+	print t2.getCell("D3").condition_state

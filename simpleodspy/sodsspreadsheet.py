@@ -160,7 +160,7 @@ class SodsSpreadSheet(SodsTable):
 		i, j = self.parseCellName(name)
 		self.setCellAt(i, j, c)
 		
-	def getCell(self, name, cell):
+	def getCell(self, name):
 		''' get the cell in cell name '''
 		
 		i, j = self.parseCellName(name)

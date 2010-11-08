@@ -112,8 +112,7 @@ class SodsXlsx():
 				elif c.value_type == 'float':
 					ws.cell(cell).value = c.value
 				elif c.value_type == 'date':
-					#ws.cell(cell).value = datetime.strptime(c.date_value, "%Y-%m-%d")
-					ws.cell(cell).value = unicode(c.text, 'utf-8')
+					ws.cell(cell).value = datetime.strptime(c.date_value, "%Y-%m-%d")
 				else:
 					ws.cell(cell).value = unicode(c.text, 'utf-8') + " "
 		
