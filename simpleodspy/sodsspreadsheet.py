@@ -384,7 +384,7 @@ class SodsSpreadSheet(SodsTable):
 				# remove the '=' prefix
 				formula = c.formula[1:]
 				value = self.evaluateFormula(formula)
-			
+				
 				# update cell value and text string
 				c.value = value
 				c.text = str(value)

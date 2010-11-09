@@ -37,17 +37,34 @@ class SodsHtml():
 	def fancyNumber(self, n):
 		''' format a fancy string for a number '''
 		
+		n = float(n)
+		
+		if n < 0:
+			sign = "-"
+			n *= -1
+		else:
+			sign = ""
+		
 		mil = int(n / 1000000)
 		n -= mil * 1000000
 		tou = int(n / 1000)
 		n -= tou * 1000
 		
 		out = ""
-		if mil: out += str(mil) + ","
-		if tou: out += str(tou) + ","
-		out += str(n)
-		
-		return out
+		if mil: 
+			out += "%d," % (mil)
+			out += "%03d," % (tou)
+			out += "%03d." % int(n)
+			out += "%02d" % int((n - int(n)) * 100.0)
+		elif tou:
+			out += "%3d," % (tou)
+			out += "%03d." % int(n)
+			out += "%02d" % int((n - int(n)) * 100.0)
+		else:
+			out += "%d." % int(n)
+			out += "%02d" % int((n - int(n)) * 100.0)
+			
+		return sign + out
 		
 	def exportCellHtml(self, c, i = 0, j = 0):
 		''' export cell data as html table cell '''
@@ -72,20 +89,21 @@ class SodsHtml():
 		if c.value_type == 'float':
 			text = self.fancyNumber(c.value) 
 		else:
-			text = escape(c.text) + "&nbsp;"
-		
+			text = escape(c.text)
+			
 		# create cell string
 		# we assume text is up to date
 		out = '''
-<td style="color:{0}; font-family:'{1}'; font-size:{2}; 
-		background-color:{3}; 
-		border-top:{4}; border-bottom:{5}; 
-		border-left:{6}; border-right:{7}; ">
-	{8}
-</td>'''.format(color, c.font_family, font_size,
+<td style="color:%s; font-family:'%s'; font-size:%s; 
+		background-color:%s; 
+		border-top:%s; border-bottom:%s; 
+		border-left:%s; border-right:%s; ">''' % (color, c.font_family, font_size,
 				background_color, 
-				border_top, border_bottom, border_left, border_right,
-				text)
+				border_top, border_bottom, border_left, border_right)
+			
+		out = out.encode('utf-8') + text
+		
+		out += '</td>'
 		
 		return out
 	

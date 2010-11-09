@@ -19,6 +19,7 @@
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
 import sys
+from xml.sax.saxutils import escape
 from xml.sax.saxutils import unescape
 import re
 
@@ -46,7 +47,7 @@ class SodsOds():
 			cs.addElement(TextProperties(color = c.color, 
 				fontsize =c.font_size, fontfamily = c.font_family))
 			
-			if c.background_color != "default":
+			if c.background_color != "default" and c.background_color != "transparent":
 				cs.addElement(TableCellProperties(backgroundcolor = c.background_color))
 			if c.border_top != "none":
 				cs.addElement(TableCellProperties(bordertop = c.border_top))
@@ -88,7 +89,8 @@ class SodsOds():
 		
 		if not string: return None
 		
-		out = unescape(string[3:])
+		out = string.encode('utf-8')
+		out = re.sub("[$]'.+'", lambda s: "", out)
 		out = out.replace(' ', '')
 		out = out.replace('[.', '')
 		out = out.replace(']', '')
@@ -117,21 +119,21 @@ class SodsOds():
 				except:
 					numbercolumnsrepeated = 1
 				
-				# get cell data
-				try:
-					c.text = cell.firstChild.firstChild
-				except:
-					c.text = cell.firstChild
-					
-				if not c.text:
-					c.text = ""
-				else:
-					c.text = unescape(str(c.text))
-				
+				c.text = ''
+				for p in cell.getElementsByType(P):
+					for p_data in p.childNodes:
+						if p_data.tagName == 'Text':
+							data = p_data.data
+							c.text = unescape(data.encode('utf-8'))
+							
 				c.value_type = cell.getAttribute('valuetype')
+				
+				# FIXME: no percentage support, convert to float
+				if c.value_type == 'percentage': c.value_type = 'float'
+				
 				c.formula = cell.getAttribute('formula')
 				if c.formula:
-					c.formula = self.cleanFormual(c.formula)
+					c.formula = self.cleanFormual(c.formula[3:])
 				c.date_value = cell.getAttribute('datevalue')
 				c.value = cell.getAttribute('value')
 				
@@ -154,6 +156,8 @@ class SodsOds():
 					for p in style.getElementsByType(TableCellProperties):
 							
 						c.background_color = p.getAttribute('backgroundcolor')
+						if not c.background_color or c.background_color == "transparent":
+							c.background_color = "default"
 						c.border_top = self.translateToPt(p.getAttribute('bordertop'))
 						if not c.border_top:
 							c.border_top = "none"
@@ -170,15 +174,15 @@ class SodsOds():
 					for p in style.getElementsByType(Map):
 						c.condition = p.getAttribute('condition')
 						if c.condition:
-							c.condition = unescape(c.condition)
-					
+							c.condition = self.cleanFormual(c.condition)
+						
 						applystylename = p.getAttribute('applystylename')
 						applystyle = doc.getStyleByName(applystylename)
 					
-						for cp in style.getElementsByType(TextProperties):
+						for cp in applystyle.getElementsByType(TextProperties):
 							c.condition_color = cp.getAttribute('color')
 					
-						for cp in style.getElementsByType(TableCellProperties):
+						for cp in applystyle.getElementsByType(TableCellProperties):
 							c.condition_background_color = cp.getAttribute('backgroundcolor')
 				
 				# check for sodsOds formulas (starting with !)
@@ -275,7 +279,7 @@ class SodsOds():
 					tc = TableCell(valuetype = c.value_type, stylename = style_name)
 				
 				# set ods text
-				tc.addElement(P(text = unicode(c.text, 'utf-8')))
+				tc.addElement(P(text = unicode(escape(c.text), 'utf-8')))
 				
 				tr.addElement(tc)
 
@@ -291,7 +295,7 @@ if __name__ == "__main__":
 	print "Test spreadsheet naming:"
 	print "-----------------------"
 	
-	t.setStyle("A1", text = "Hello world")
+	t.setStyle("A1", text = "שלום עולם")
 	t.setStyle("A1:G2", background_color = "#00ff00")
 	t.setStyle("A3:G5", background_color = "#ffff00")
 	
@@ -326,5 +330,5 @@ if __name__ == "__main__":
 	tw = SodsOds(t2)
 	tw.load("test.ods")
 	
-	print t2.getCell("D3").text
+	print t2.getCell("A1").text
 	print t2.getCell("D3").condition_state

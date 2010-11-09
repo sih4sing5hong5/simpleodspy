@@ -41,9 +41,9 @@ class SodsXlsx():
 			width = 0
 			
 		# conver to excel widths
-		if width > 2: width = 2
+		if width > 3: width = 3
 		
-		return [Border.BORDER_NONE, Border.BORDER_THIN, Border.BORDER_THICK][width]
+		return [Border.BORDER_NONE, Border.BORDER_HAIR, Border.BORDER_THIN, Border.BORDER_THICK][width]
 	
 	def convertXlsBorderColor(self, color_str):
 		''' return the xls color index '''
@@ -107,8 +107,8 @@ class SodsXlsx():
 				
 				# set xls text
 				if (c.formula and c.formula[0] == '='):
-					#ws.cell(cell).value = c.formula
-					ws.cell(cell).value = unicode(c.text, 'utf-8')
+					ws.cell(cell).value = c.formula
+					#ws.cell(cell).value = unicode(c.text, 'utf-8')
 				elif c.value_type == 'float':
 					ws.cell(cell).value = c.value
 				elif c.value_type == 'date':

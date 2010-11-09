@@ -49,9 +49,9 @@ class SodsXls():
 			width = 0
 			
 		# conver to excel widths
-		if width > 2: width = 2
+		if width > 3: width = 3
 		
-		return [Borders.NO_LINE, Borders.THIN, Borders.THICK][width]
+		return [Borders.NO_LINE, Borders.HAIR, Borders.THIN, Borders.THICK][width]
 	
 	def convertXlsBorderColor(self, border):
 		''' return the xls border color index '''
@@ -65,7 +65,7 @@ class SodsXls():
 		try:
 			color = int(re.search('#(......)', color_str).group(1), 16)
 		except:
-			return 0
+			return 2 + 7
 		
 		# convert color
 		xlscolor = 0
@@ -236,7 +236,7 @@ class SodsXls():
 					ws.write(i - 1, j - 1, Formula(c.formula[1:]), style)
 				elif c.value_type == 'float':
 					style.num_format_str = '#,##0.00'
-					ws.write(i - 1, j - 1, c.value, style)
+					ws.write(i - 1, j - 1, float(c.value), style)
 				elif c.value_type == 'date':
 					style.num_format_str = 'YYYY-MM-DD'
 					ws.write(i - 1, j - 1, datetime.strptime(c.date_value, "%Y-%m-%d"), style)
