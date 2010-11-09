@@ -369,13 +369,16 @@ class SodsSpreadSheet(SodsTable):
 		
 		return value
 		
-	def updateOneCell(self, name):
+	def updateOneCell(self, name, fast = False):
 		''' update one cell text '''
 		
 		# parse i,j from cell name
 		i, j = self.parseCellName(name)
 		
 		c = self.getCellAt(i, j)
+		
+		# in fast mode, if we have a value, do not re-calculate
+		if fast and c.value: return
 		
 		# check if the cell has formula
 		if c.formula:
@@ -412,7 +415,7 @@ class SodsSpreadSheet(SodsTable):
 		
 		self.setCellAt(i, j, c)
 		
-	def updateCell(self, name):
+	def updateCell(self, name, fast = False):
 		''' update cell text value '''
 		
 		# parse i,j from cell name
@@ -429,37 +432,29 @@ class SodsSpreadSheet(SodsTable):
 		for i in i_range:
 			for j in j_range:
 				cell = self.encodeCellName(i, j)
-				self.updateOneCell(cell)
+				self.updateOneCell(cell, fast = fast)
 	
-	def updateTable(self, name, i_max = None, j_max = None):
+	def updateTable(self, name, i_max = None, j_max = None, fast = True):
 		''' update table texts values '''
 		
 		if not i_max: i_max = self.i_max
 		if not j_max: j_max = self.j_max
 		
-		# make sure values are up to date
+		# clear old caculations
+		# loop and clear the cells value
+		if fast:
+			for i in range(1, i_max):
+				for j in range(1, j_max):
+					c = self.getCellAt(i, j)
+					if c.formula: c.value = None
+					self.setCellAt(i, j, c)
+				
+		# recalculate values
 		# loop and update the cells value
 		for i in range(1, i_max):
 			for j in range(1, j_max):
 				cell = self.encodeCellName(i, j)
-				self.updateOneCell(cell)
-		
-	def saveXml(self, filename, i_max = None, j_max = None):
-		''' save table in xml format '''
-		
-		# update cells text
-		self.updateTable(i_max, j_max)
-		
-		# if filename is - print to stdout
-		if filename == '-':
-			print self.exportXml(i_max, j_max)
-		else:
-			file(filename,"w").write(self.exportXml(i_max, j_max))
-	
-	def loadXmlfile(self, filename):
-		''' load a table from file '''
-		
-		self.loadXml(file(filename).read())
+				self.updateOneCell(cell, fast = fast)
 		
 if __name__ == "__main__":
 	

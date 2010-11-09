@@ -192,6 +192,9 @@ class SodsXls():
 		if not i_max: i_max = self.table.i_max
 		if not j_max: j_max = self.table.j_max
 		
+		# update cells text
+		self.table.updateTable(i_max, j_max)
+		
 		# create new xls spreadsheet
 		w = Workbook(encoding='utf-8')
 		ws = w.add_sheet("sheet 1")
@@ -202,7 +205,6 @@ class SodsXls():
 			for j in range(1, j_max):
 				# update the cell text and condition
 				cell = self.table.encodeColName(j) + str(i)
-				self.table.updateOneCell(cell)
 				c = self.table.getCellAt(i, j)
 				
 				# FIXME: excel output does not support conditional formating,

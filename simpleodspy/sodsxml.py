@@ -99,6 +99,9 @@ class SodsXml():
 		if not i_max: i_max = self.table.i_max
 		if not j_max: j_max = self.table.j_max
 		
+		# update cells text
+		self.table.updateTable(i_max, j_max)
+		
 		out = ""
 		
 		for i in range(1, i_max):
@@ -149,11 +152,8 @@ class SodsXml():
 			# insert cell to table
 			self.table.setCellAt(i, j, c)
 		
-	def save(self, filename, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
+	def save(self, filename, i_max = None, j_max = None):
 		''' save table in xml format '''
-		
-		# update cells text
-		self.table.updateTable(i_max, j_max)
 		
 		# if filename is - print to stdout
 		if filename == '-':

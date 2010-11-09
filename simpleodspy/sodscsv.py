@@ -30,6 +30,9 @@ class SodsCsv():
 		if not i_max: i_max = self.table.i_max
 		if not j_max: j_max = self.table.j_max
 		
+		# update cells text
+		self.table.updateTable(i_max, j_max)
+		
 		# create the table element of the html page
 		out = ""
 		
@@ -49,9 +52,6 @@ class SodsCsv():
 		
 	def save(self, filename, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
 		''' save table in csv format '''
-		
-		# update cells text
-		self.table.updateTable(i_max, j_max)
 		
 		# if filename is - print to stdout
 		if filename == '-':

@@ -38,6 +38,7 @@ class SodsCell:
 		
 		# TableCell
 		self.text = ""
+		self.format = ""
 		self.value_type = "string"
 		self.value = None
 		self.formula = None

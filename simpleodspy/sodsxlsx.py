@@ -62,6 +62,9 @@ class SodsXlsx():
 		if not i_max: i_max = self.table.i_max
 		if not j_max: j_max = self.table.j_max
 		
+		# update cells text
+		self.table.updateTable(i_max, j_max)
+		
 		# create new xlsx spreadsheet
 		wb = Workbook()
 		ew = ExcelWriter(workbook = wb)
@@ -75,7 +78,6 @@ class SodsXlsx():
 			for j in range(1, j_max):
 				# update the cell text and condition
 				cell = self.table.encodeColName(j) + str(i)
-				self.table.updateOneCell(cell)
 				c = self.table.getCellAt(i, j)
 				
 				# FIXME: excel output does not support conditional formating,
@@ -108,7 +110,6 @@ class SodsXlsx():
 				# set xls text
 				if (c.formula and c.formula[0] == '='):
 					ws.cell(cell).value = c.formula
-					#ws.cell(cell).value = unicode(c.text, 'utf-8')
 				elif c.value_type == 'float':
 					ws.cell(cell).value = c.value
 				elif c.value_type == 'date':

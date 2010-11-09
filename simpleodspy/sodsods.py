@@ -43,10 +43,12 @@ class SodsOds():
 		''' get a style_name by style_id '''
 		
 		if not style_id in self.styles.keys():
+			# create new style
 			cs = Style(name = cell, family = 'table-cell', datastylename=datastylename)
 			cs.addElement(TextProperties(color = c.color, 
 				fontsize =c.font_size, fontfamily = c.font_family))
 			
+			# set backgound and borders
 			if c.background_color != "default" and c.background_color != "transparent":
 				cs.addElement(TableCellProperties(backgroundcolor = c.background_color))
 			if c.border_top != "none":
@@ -202,6 +204,9 @@ class SodsOds():
 		if not i_max: i_max = self.table.i_max
 		if not j_max: j_max = self.table.j_max
 		
+		# update cells text
+		self.table.updateTable(i_max, j_max)
+		
 		# create new odf spreadsheet
 		odfdoc = OpenDocumentSpreadsheet()
 		table = Table()
@@ -242,7 +247,6 @@ class SodsOds():
 			for j in range(1, j_max):
 				# update the cell text and condition
 				cell = self.table.encodeColName(j) + str(i)
-				self.table.updateOneCell(cell)
 				c = self.table.getCellAt(i, j)
 				
 				# chose datastylename

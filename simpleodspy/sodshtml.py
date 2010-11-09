@@ -101,17 +101,18 @@ class SodsHtml():
 				background_color, 
 				border_top, border_bottom, border_left, border_right)
 			
-		out = out.encode('utf-8') + text
-		
-		out += '</td>'
+		out = out.encode('utf-8') + text + '</td>'
 		
 		return out
 	
-	def exportHtml(self, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
+	def exportHtml(self, i_max = None, j_max = None):
 		''' export table in html format '''
 		
 		if not i_max: i_max = self.table.i_max
 		if not j_max: j_max = self.table.j_max
+		
+		# update cells text
+		self.table.updateTable(i_max, j_max)
 		
 		# create the table element of the html page
 		out = "<table>\n"
@@ -125,11 +126,8 @@ class SodsHtml():
 		
 		return self.html_format % out
 		
-	def save(self, filename, i_max = None, j_max = None, delimiter = ",", txt_delimiter = '"'):
+	def save(self, filename, i_max = None, j_max = None):
 		''' save table in xml format '''
-		
-		# update cells text
-		self.table.updateTable(i_max, j_max)
 		
 		# if filename is - print to stdout
 		if filename == '-':
