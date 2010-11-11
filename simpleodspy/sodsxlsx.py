@@ -109,7 +109,7 @@ class SodsXlsx():
 				
 				# set xls text
 				if (c.formula and c.formula[0] == '='):
-					ws.cell(cell).value = c.formula
+					ws.cell(cell).value = c.formula.replace(";",",")
 				elif c.value_type == 'float':
 					ws.cell(cell).value = c.value
 				elif c.value_type == 'date':
@@ -123,7 +123,7 @@ if __name__ == "__main__":
 	
 	from sodsspreadsheet import SodsSpreadSheet
 	
-	t = SodsSpreadSheet(200,200)
+	t = SodsSpreadSheet(30,30)
 	
 	print "Test spreadsheet naming:"
 	print "-----------------------"

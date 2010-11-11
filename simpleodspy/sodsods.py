@@ -75,17 +75,52 @@ class SodsOds():
 		
 		return self.styles[style_id]
 	
-	def translateToPt(self, string):
+	def translateBorderToPt(self, string):
 		''' translte inch and cm to pt '''
 		
-		if not string: return None
-		
+		if not string or string == "none": return "none"
 		out = unescape(string)
-		out = re.sub('([0-9.]+)in', lambda s: str(int(float(s.group(1)) * 72.0 + .5)) + "pt", out)
-		out = re.sub('([0-9.]+)cm', lambda s: str(int(float(s.group(1)) * 72.0 / 2.54 + .5)) + "pt", out)
+		
+		# translate units
+		width = re.search('[0-9.]+((in)|(cm)|(pt))', out)
+		if width:
+			width = width.group(0)
+			width = re.sub('([0-9.]+)in', lambda s: str(int(float(s.group(1)) * 72.0 + 1)) + "pt", width)
+			width = re.sub('([0-9.]+)cm', lambda s: str(int(float(s.group(1)) * 72.0 / 2.54 + 1)) + "pt", width)
+		else:
+			width = "1pt"
+		
+		# FIXME: chack style
+		style = "solid"
+		
+		# check color
+		color = re.search('#......', out)
+		if color:
+			color = color.group(0)
+		else:
+			color = "#000000"
+		
+		out = "%s %s %s" % (width, style, color)
 		
 		return out
 	
+	def translateToPt(self, string):
+		''' translte inch and cm to pt '''
+		
+		if not string: return "12pt"
+		width = unescape(string)
+		
+		# translate units
+		width = re.search('[0-9.]+((in)|(cm)|(pt))', width)
+		if width:
+			width = width.group(0)
+			width = re.sub('([0-9.]+)in', lambda s: str(int(float(s.group(1)) * 72.0 + .5)) + "pt", width)
+			width = re.sub('([0-9.]+)cm', lambda s: str(int(float(s.group(1)) * 72.0 / 2.54 + .5)) + "pt", width)
+		else:
+			width = "12pt"
+		
+		return width
+
 	def cleanFormual(self, string):
 		''' clean odf formula '''
 		
@@ -99,7 +134,23 @@ class SodsOds():
 		out = out.replace(':.', ':')
 		
 		return out
+	
+	def getCellText(self, cell):
+		''' extract text from cell '''
 		
+		text = ''
+		for p in cell.getElementsByType(P):
+			for p_data in p.childNodes:
+				if p_data.tagName == 'Text':
+					data = p_data.data
+					text += unescape(data.encode('utf-8'))
+				if p_data.tagName == 'text:span':
+					data = p_data.firstChild
+					if data:
+						text += unescape(data.data.encode('utf-8'))
+		
+		return text
+	
 	def load(self, filename):
 		''' load a table in ods format '''
 		
@@ -121,12 +172,7 @@ class SodsOds():
 				except:
 					numbercolumnsrepeated = 1
 				
-				c.text = ''
-				for p in cell.getElementsByType(P):
-					for p_data in p.childNodes:
-						if p_data.tagName == 'Text':
-							data = p_data.data
-							c.text = unescape(data.encode('utf-8'))
+				c.text = self.getCellText(cell)
 							
 				c.value_type = cell.getAttribute('valuetype')
 				
@@ -149,8 +195,6 @@ class SodsOds():
 						if not c.font_family:
 							c.font_family = "Arial"
 						c.font_size = self.translateToPt(p.getAttribute('fontsize'))
-						if not c.font_size:
-							c.font_size = "12pt"
 						c.color = p.getAttribute('color')
 						if not c.color:
 							c.color = "#000000"
@@ -160,18 +204,17 @@ class SodsOds():
 						c.background_color = p.getAttribute('backgroundcolor')
 						if not c.background_color or c.background_color == "transparent":
 							c.background_color = "default"
-						c.border_top = self.translateToPt(p.getAttribute('bordertop'))
-						if not c.border_top:
-							c.border_top = "none"
-						c.border_bottom = self.translateToPt(p.getAttribute('borderbottom'))
-						if not c.border_bottom:
-							c.border_bottom = "none"
-						c.border_left = self.translateToPt(p.getAttribute('borderleft'))
-						if not c.border_left:
-							c.border_left = "none"
-						c.border_right = self.translateToPt(p.getAttribute('borderright'))
-						if not c.border_right:
-							c.border_right = "none"
+						border = self.translateBorderToPt(p.getAttribute('border'))
+						if border == "none":
+							c.border_top = self.translateBorderToPt(p.getAttribute('bordertop'))
+							c.border_bottom = self.translateBorderToPt(p.getAttribute('borderbottom'))
+							c.border_left = self.translateBorderToPt(p.getAttribute('borderleft'))
+							c.border_right = self.translateBorderToPt(p.getAttribute('borderright'))
+						else:
+							c.border_top = border
+							c.border_bottom = border
+							c.border_left = border
+							c.border_right = border
 						
 					for p in style.getElementsByType(Map):
 						c.condition = p.getAttribute('condition')
