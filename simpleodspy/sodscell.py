@@ -29,6 +29,9 @@ class SodsCell:
 		self.font_family = "Arial"
 		self.color = "#000000"
 		
+		# ParagraphProperties
+		self.text_align = "start"
+		
 		# TableCellProperties
 		self.background_color = "default"
 		self.border_top = "none"
@@ -38,11 +41,11 @@ class SodsCell:
 		
 		# TableCell
 		self.text = ""
-		self.format = ""
 		self.value_type = "string"
 		self.value = None
 		self.formula = None
 		self.date_value = None
+		self.format = ""
 		
 		# Map
 		self.condition = None
@@ -50,6 +53,64 @@ class SodsCell:
 		self.condition_color = "#000000"
 		self.condition_background_color = "#ffffff"
 	
+	def set(self, font_size = None, font_family = None, color = None, 
+			background_color = None, border_top = None,
+			border_bottom = None, border_left = None, border_right = None,
+			text = None, value_type = None,
+			value = None, formula = None,
+			date_value = None,
+			condition = None, condition_state = None,
+			condition_color = None, condition_background_color = None,
+			text_align = None, format = None):
+		''' set values of one cell object '''
+		
+		if font_size:
+			self.font_size = font_size
+		if font_family:
+			self.font_family = font_family
+		if color:
+			self.color = color
+			if not condition:
+				self.condition_color = color
+				
+		if background_color:
+			self.background_color = background_color
+			if not condition:
+				self.condition_background_color = background_color
+		if border_top:
+			self.border_top = border_top
+		if border_bottom:
+			self.border_bottom = border_bottom
+		if border_left:
+			self.border_left = border_left
+		if border_right:
+			self.border_right = border_right
+		
+		if text_align:
+			self.text_align = text_align
+		
+		if text:
+			self.text = text
+		if value_type:
+			self.value_type = value_type
+		if value:
+			self.value = value
+		if formula:
+			self.formula = formula
+		if date_value:
+			self.date_value = date_value
+		if format:
+			self.format = format
+		
+		if condition:
+			self.condition = condition
+		if condition_state:
+			self.condition_state = condition_state
+		if condition_color:
+			self.condition_color = condition_color
+		if condition_background_color:
+			self.condition_background_color = condition_background_color
+		
 if __name__ == "__main__":
 	c = SodsCell()
 

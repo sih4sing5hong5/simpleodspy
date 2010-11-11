@@ -428,6 +428,15 @@ class SodsSpreadSheet(SodsTable):
 		if type(j_range) != type(list()):
 			j_range = [j_range]
 		
+		# clear old caculations
+		# loop and clear the cells value
+		if fast:
+			for i in i_range:
+				for j in j_range:
+					c = self.getCellAt(i, j)
+					if c.formula: c.value = None
+					self.setCellAt(i, j, c)
+					
 		# loop and update the cells value
 		for i in i_range:
 			for j in j_range:

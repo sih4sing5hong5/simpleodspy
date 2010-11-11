@@ -18,8 +18,6 @@
 # Copyright (C) 2010 Yaacov Zamir (2010) <kzamir@walla.co.il>
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
-from copy import deepcopy
-
 from sodscell import SodsCell
 
 class SodsTable:
@@ -65,7 +63,8 @@ class SodsTable:
 			value = None, formula = None,
 			date_value = None,
 			condition = None, condition_state = None,
-			condition_color = None, condition_background_color = None):
+			condition_color = None, condition_background_color = None,
+			text_align = None, format = None):
 		''' set values of cell object range in i, j ranges '''
 		
 		# we want ranges
@@ -78,78 +77,21 @@ class SodsTable:
 		# loop on cell range
 		for i in i_range:
 			for j in j_range:
-				self.setAtOneCell(i, j, 
-					font_size, font_family, color, 
+				# get the cell in i,j
+				c = self.getCellAt(i, j)
+				
+				# set cell data
+				c.set(font_size, font_family, color, 
 					background_color, border_top,
 					border_bottom, border_left, border_right,
 					text, value_type, value, formula, date_value,
 					condition, condition_state,
-					condition_color, condition_background_color)
+					condition_color, condition_background_color,
+					text_align, format)
 		
-	def setAtOneCell(self, i, j, 
-			font_size = None, font_family = None, color = None, 
-			background_color = None, border_top = None,
-			border_bottom = None, border_left = None, border_right = None,
-			text = None, value_type = None,
-			value = None, formula = None,
-			date_value = None,
-			condition = None, condition_state = None,
-			condition_color = None, condition_background_color = None):
-		''' set values of one cell object in i, j '''
-		
-		# get the cell in i,j
-		c = self.getCellAt(i, j)
-				
-		if font_size:
-			c.font_size = font_size
-		if font_family:
-			c.font_family = font_family
-		if color:
-			c.color = color
-			if not condition:
-				c.condition_color = color
-				
-		if background_color:
-			c.background_color = background_color
-			if not condition:
-				c.condition_background_color = background_color
-		if border_top:
-			c.border_top = border_top
-		if border_bottom:
-			c.border_bottom = border_bottom
-		if border_left:
-			c.border_left = border_left
-		if border_right:
-			c.border_right = border_right
+				# return cell to table
+				self.setCellAt(i, j, c)
 	
-		if text:
-			c.text = text
-		if value_type:
-			c.value_type = value_type
-		if value:
-			c.value = value
-		if formula:
-			c.formula = formula
-		if date_value:
-			c.date_value = date_value
-	
-		if condition:
-			c.condition = condition
-		if condition_state:
-			c.condition_state = condition_state
-		if condition_color:
-			c.condition_color = condition_color
-		if condition_background_color:
-			c.condition_background_color = condition_background_color
-		
-		# return cell to table
-		self.setCellAt(i, j, c)
-			
-	def copy(self):
-		''' return a copy of the table '''
-		
-		return deepcopy(self)
-
 if __name__ == "__main__":
 	
 	t = SodsTable()
