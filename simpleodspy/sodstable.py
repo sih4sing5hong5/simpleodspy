@@ -30,6 +30,9 @@ class SodsTable:
 		self.i_max = i_max
 		self.j_max = j_max
 		
+		# table style
+		self.direction = 'rtl'
+		
 	def getCellAt(self, i, j):
 		''' get the cell object in i,j '''
 		
@@ -64,7 +67,8 @@ class SodsTable:
 			date_value = None,
 			condition = None, condition_state = None,
 			condition_color = None, condition_background_color = None,
-			text_align = None, format = None):
+			text_align = None, format = None,
+			column_width = None):
 		''' set values of cell object range in i, j ranges '''
 		
 		# we want ranges
@@ -87,7 +91,7 @@ class SodsTable:
 					text, value_type, value, formula, date_value,
 					condition, condition_state,
 					condition_color, condition_background_color,
-					text_align, format)
+					text_align, format, column_width)
 		
 				# return cell to table
 				self.setCellAt(i, j, c)

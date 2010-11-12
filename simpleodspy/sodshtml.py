@@ -29,42 +29,35 @@ class SodsHtml():
 		# takes table
 		self.html_format = '''<html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-</head><body>
+</head><body dir='%s'>
 %s
 </body></html>'''
 	
-	
-	def fancyNumber(self, n):
+	def fancyNumber(self, f, sep = ",", neg = "-", pos = ""):
 		''' format a fancy string for a number '''
 		
-		n = float(n)
+		# split number
+		n_parts = str(f).split(".")
 		
-		if n < 0:
-			sign = "-"
-			n *= -1
+		if len(n_parts) == 2:
+			n, m = n_parts
 		else:
-			sign = ""
+			n, m = n_parts[0], "00"
 		
-		mil = int(n / 1000000)
-		n -= mil * 1000000
-		tou = int(n / 1000)
-		n -= tou * 1000
+		sign = False
+		if n[0] == "-":
+			n = n[1:]
+			sign = True
 		
-		out = ""
-		if mil: 
-			out += "%d," % (mil)
-			out += "%03d," % (tou)
-			out += "%03d." % int(n)
-			out += "%02d" % int((n - int(n)) * 100.0)
-		elif tou:
-			out += "%3d," % (tou)
-			out += "%03d." % int(n)
-			out += "%02d" % int((n - int(n)) * 100.0)
-		else:
-			out += "%d." % int(n)
-			out += "%02d" % int((n - int(n)) * 100.0)
-			
-		return sign + out
+		# call the positive int formater
+		return [pos, neg][sign] + self.fancyIntNumber(n, sep) + "." + m[:2]
+		
+	def fancyIntNumber(self, n, sep = ","):
+		''' format a fancy string for int number '''
+		
+		# we have string, continue
+		if len(n) < 4: return n
+		return self.fancyIntNumber(n[:-3]) + sep + n[-3:]
 		
 	def exportCellHtml(self, c, i = 0, j = 0):
 		''' export cell data as html table cell '''
@@ -84,7 +77,13 @@ class SodsHtml():
 		border_bottom = c.border_bottom.replace('pt', 'px')
 		border_left = c.border_left.replace('pt', 'px')
 		border_right = c.border_right.replace('pt', 'px')
+		text_align = c.text_align.replace('start', 'right').replace('end', 'left')
 		
+		if self.table.direction == 'rtl':
+			border = border_left
+			border_left = border_right
+			border_right = border
+			
 		# get cell text
 		if c.value_type == 'float':
 			text = self.fancyNumber(c.value) 
@@ -94,14 +93,16 @@ class SodsHtml():
 		# create cell string
 		# we assume text is up to date
 		out = '''
-<td style="color:%s; font-family:'%s'; font-size:%s; 
+<td style="padding: 2px 10px; color:%s; font-family:'%s'; font-size:%s; 
 		background-color:%s; 
 		border-top:%s; border-bottom:%s; 
-		border-left:%s; border-right:%s; ">''' % (color, c.font_family, font_size,
+		border-left:%s; border-right:%s; 
+		text-align:%s">''' % (color, c.font_family, font_size,
 				background_color, 
-				border_top, border_bottom, border_left, border_right)
+				border_top, border_bottom, border_left, border_right,
+				text_align)
 			
-		out = out.encode('utf-8') + text + '</td>'
+		out = out.encode('utf-8') + text + '&nbsp;</td>'
 		
 		return out
 	
@@ -117,6 +118,12 @@ class SodsHtml():
 		# create the table element of the html page
 		out = "<table>\n"
 		
+		# columns
+		for j in range(1, j_max):
+			width = self.table.getCellAt(0, j).column_width.replace('pt', 'px')
+			out += "<col style='width:%s;' />\n" % width
+		
+		# rows
 		for i in range(1, i_max):
 			out += "<tr>\n"
 			for j in range(1, j_max):
@@ -124,7 +131,7 @@ class SodsHtml():
 			out += "</tr>\n"
 		out += "</table>"
 		
-		return self.html_format % out
+		return self.html_format % (self.table.direction, out)
 		
 	def save(self, filename, i_max = None, j_max = None):
 		''' save table in xml format '''

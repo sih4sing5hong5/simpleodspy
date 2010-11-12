@@ -32,6 +32,9 @@ class SodsCell:
 		# ParagraphProperties
 		self.text_align = "start"
 		
+		# TableColumnProperties
+		self.column_width = "180pt"
+		
 		# TableCellProperties
 		self.background_color = "default"
 		self.border_top = "none"
@@ -61,7 +64,8 @@ class SodsCell:
 			date_value = None,
 			condition = None, condition_state = None,
 			condition_color = None, condition_background_color = None,
-			text_align = None, format = None):
+			text_align = None, format = None,
+			column_width = None):
 		''' set values of one cell object '''
 		
 		if font_size:
@@ -88,7 +92,9 @@ class SodsCell:
 		
 		if text_align:
 			self.text_align = text_align
-		
+		if column_width:
+			self.column_width = column_width
+			
 		if text:
 			self.text = text
 		if value_type:

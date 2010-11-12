@@ -26,7 +26,7 @@ import re
 from odf.opendocument import OpenDocumentSpreadsheet
 from odf.opendocument import load
 from odf.table import Table, TableColumn, TableRow, TableCell
-from odf.style import Style, TextProperties, TableCellProperties, TableColumnProperties, Map
+from odf.style import Style, TableProperties, TextProperties, TableCellProperties, TableColumnProperties, Map
 from odf.number import NumberStyle, DateStyle, CurrencyStyle, TextStyle, Number, Text, Day, Month, Year, Era
 from odf.text import P, Date
 
@@ -252,7 +252,15 @@ class SodsOds():
 		
 		# create new odf spreadsheet
 		odfdoc = OpenDocumentSpreadsheet()
-		table = Table()
+		
+		# set direction style
+		rtl = Style(name = "dir", family = "table")
+		if self.table.direction == 'rtl':
+			rtl.addElement(TableProperties(writingmode="rl-tb"))
+		odfdoc.automaticstyles.addElement(rtl)
+		
+		# create the table
+		table = Table(name = "sheet 1", stylename = 'dir')
 		
 		# default style
 		ts = Style(name = "ts", family = "table-cell")
