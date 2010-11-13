@@ -157,6 +157,18 @@ class SodsOds():
 		# read the file
 		doc = load(filename)
 		
+		# get table style
+		self.table.direction = 'ltr'
+		try:
+			stylename = doc.getElementsByType(Table)[0].getAttribute('stylename')
+			style = doc.getStyleByName(stylename)
+			tps = style.getElementsByType(TableProperties)
+			for tp in tps:
+				if tp.getAttribute('writingmode') == 'rl-tb':
+					self.table.direction = 'rtl'
+		except:
+			pass
+		
 		# loop on all rows and columns
 		i = 0
 		for row in doc.getElementsByType(TableRow):

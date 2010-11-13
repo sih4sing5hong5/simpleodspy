@@ -116,7 +116,7 @@ class SodsHtml():
 		self.table.updateTable(i_max, j_max)
 		
 		# create the table element of the html page
-		out = "<table>\n"
+		out = "<table style='border-collapse:collapse;'>\n"
 		
 		# columns
 		for j in range(1, j_max):
