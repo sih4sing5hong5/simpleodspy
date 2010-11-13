@@ -236,7 +236,7 @@ class SodsXls():
 				if (c.formula and c.formula[0] == '='):
 					style.num_format_str = '#,##0.00'
 					ws.write(i - 1, j - 1, Formula(c.formula[1:]), style)
-				elif c.value_type == 'float':
+				elif c.value_type == 'float' and self.table.isFloat(c.value):
 					style.num_format_str = '#,##0.00'
 					ws.write(i - 1, j - 1, float(c.value), style)
 				elif c.value_type == 'date':

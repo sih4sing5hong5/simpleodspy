@@ -251,15 +251,6 @@ class SodsSpreadSheet(SodsTable):
 		# return the sum as string
 		return out
 	
-	def getOneCellValueRe(self, name):
-		''' return the updated float value of a cell input name is re group '''
-		
-		# we work with a string, 
-		# get the re.group string
-		name = name.group(0)
-		
-		return self.getOneCellValue(name)
-	
 	def functionCallbackWrapper(self, f, args_string):
 		''' return the updated float value of a cell input name is re group '''
 		
@@ -298,6 +289,15 @@ class SodsSpreadSheet(SodsTable):
 				pass
 		
 		return "!ERR"
+	
+	def getOneCellValueRe(self, name):
+		''' return the updated float value of a cell input name is re group '''
+		
+		# we work with a string, 
+		# get the re.group string
+		name = name.group(0)
+		
+		return self.getOneCellValue(name)
 	
 	def getOneCellValue(self, name):
 		''' return the updated float value of a cell '''
@@ -365,8 +365,11 @@ class SodsSpreadSheet(SodsTable):
 		
 		# get all the cell names in this formula and replace them with values
 		formula = formula.replace(';', '')
-		value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValueRe, formula))
-		
+		try:
+			value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValueRe, formula))
+		except:
+			value = "!ERR"
+			
 		return value
 		
 	def updateOneCell(self, name, fast = False):

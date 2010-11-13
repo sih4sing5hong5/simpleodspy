@@ -339,11 +339,11 @@ class SodsOds():
 				elif (c.value_type == 'date'):
 					tc = TableCell(valuetype = c.value_type, 
 						datevalue = c.date_value, stylename = style_name)
-				elif (c.value_type == 'float'):
+				elif (c.value_type == 'float') and self.table.isFloat(c.value):
 					tc = TableCell(valuetype = c.value_type, 
 						value = c.value, stylename = style_name)
 				else:
-					tc = TableCell(valuetype = c.value_type, stylename = style_name)
+					tc = TableCell(valuetype = 'string', stylename = style_name)
 				
 				# set ods text
 				tc.addElement(P(text = unicode(escape(c.text), 'utf-8')))
