@@ -36,6 +36,7 @@ class SodsSpreadSheet(SodsTable):
 		# add functions
 		self.registerFunction('AVERAGE', self.averageCallback)
 		self.registerFunction('IF', self.ifCallback)
+		self.registerFunction('CUT', self.cutCallback)
 		
 	def registerFunction(self, function_name, function_callback):
 		''' register a spreadsheet function '''
@@ -290,6 +291,29 @@ class SodsSpreadSheet(SodsTable):
 		
 		return "!ERR"
 	
+	def cutCallback(self, args_string):
+		''' return the result of a cut function '''
+		
+		# get the cut funtion args: cut(string, field number, delimeter = ',')
+		args = args_string.replace(';',',')
+		args_list = args.split(',')
+		args_len = len(args_list)
+		
+		if args_len in [2, 3]:
+			try:
+				string = self.evaluateFormula(args_list[0])
+				field = int(self.evaluateFormula(args_list[1]))
+				if args_len == 3:
+					# get the value inside quotes
+					delimeter = re.search("'(.*)'", args_list[2]).group(1)
+				else:
+					delimeter = ','
+				return string.split(delimeter)[field]
+			except:
+				pass
+		
+		return "!ERR"
+	
 	def getOneCellValueRe(self, name):
 		''' return the updated float value of a cell input name is re group '''
 		
@@ -308,11 +332,18 @@ class SodsSpreadSheet(SodsTable):
 		c = self.getCellAt(i, j)
 		
 		# if this is not a float cell return 0
-		if (c.value_type != 'float'):
+		if c.value_type == 'string' and c.text == "":
 			return "0.0"
-			
+		elif c.value_type == 'string' and c.text != "":
+			return "'%s'" % c.text
+		
+		# this is a date
+		# FIXME: cacultae date number, julian ?
+		elif c.value_type == 'date':
+			return "0.0"
+		
 		# if this is just a value, return it
-		if (not c.formula):
+		elif not c.formula:
 			return str(c.value)
 		
 		# this is a formula, we need to update it's value
@@ -326,8 +357,8 @@ class SodsSpreadSheet(SodsTable):
 	def evaluateFormula(self, formula):
 		''' evaluate the value of a formula '''
 		
-		# remove white spaces
-		formula = re.sub(r'\s', '', formula.upper())
+		# remove white noise
+		formula = formula.upper()
 		formula = formula.replace('!', '')
 		formula = formula.replace('$', '')
 		formula = formula.replace('PI()', 'PI')
@@ -368,7 +399,8 @@ class SodsSpreadSheet(SodsTable):
 		try:
 			value = eval(re.sub('[A-Z]+[0-9]+', self.getOneCellValueRe, formula))
 		except:
-			value = "!ERR"
+			# FIXME: is this a good thing ?
+			value = re.sub('[A-Z]+[0-9]+', self.getOneCellValueRe, formula)
 			
 		return value
 		
@@ -389,11 +421,17 @@ class SodsSpreadSheet(SodsTable):
 			try:
 				# remove the '=' prefix
 				formula = c.formula[1:]
+				
 				value = self.evaluateFormula(formula)
 				
-				# update cell value and text string
-				c.value = value
-				c.text = str(value)
+				# if answer is string encapsulte
+				if not self.isFloat(value):
+					c.value = "'%s'" % value
+					c.text = value
+				else:
+					# update cell value and text string
+					c.value = value
+					c.text = str(value)
 			except:
 				c.value = 0
 				c.text = "!ERR"
@@ -446,7 +484,7 @@ class SodsSpreadSheet(SodsTable):
 				cell = self.encodeCellName(i, j)
 				self.updateOneCell(cell, fast = fast)
 	
-	def updateTable(self, name, i_max = None, j_max = None, fast = True):
+	def updateTable(self, i_max = None, j_max = None, fast = True):
 		''' update table texts values '''
 		
 		if not i_max: i_max = self.i_max
@@ -493,6 +531,10 @@ if __name__ == "__main__":
 	t.setValue("D2", "=SIN(PI()/2)")
 	t.setValue("D10", "=IF(A2>3,C7,C9)")
 	
+	t.setValue("D11", "Hello world, ")
+	t.setValue("D12", "=D11 * 2")
+	t.setValue("D13", "=CUT(D12,2, ' ')")
+	
 	t.setStyle("A3:D3", border_top = "1pt solid #ff0000")
 	t.setValue("C3", "Sum of cells:")
 	t.setValue("D3", "=SUM($A$2:D2)")
@@ -500,8 +542,11 @@ if __name__ == "__main__":
 	t.setStyle("D2:D3", condition = "cell-content()<=100")
 	t.setStyle("D2:D3", condition_background_color = "#ff0000")
 	
-	t.updateCell("A1:G3")
+	t.updateTable()
 	
 	print t.getCell("D3").text
 	print t.getCell("D3").condition_state
+	print t.getCell("D11").text
+	print t.getCell("D13").text
+	
 	
