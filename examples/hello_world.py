@@ -47,7 +47,7 @@ tw = SodsXml(t)
 tw.save("test.xml")
 
 # import
-t2 = SodsSpreadSheet()
+t2 = SodsSpreadSheet(10, 10)
 tw = SodsXml(t2)
 tw.load("test.xml")
 tw.save("test2.xml")
