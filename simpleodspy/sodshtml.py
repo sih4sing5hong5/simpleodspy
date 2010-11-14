@@ -95,10 +95,15 @@ class SodsHtml():
 		# create cell string
 		# we assume text is up to date
 		out = '''#%s {
-	padding: 2px 10px; color:%s; font-family:'%s'; font-size:%s; 
+	padding: 2px 10px; 
+	color:%s; 
+	font-family:'%s'; 
+	font-size:%s; 
 	background-color:%s; 
-	border-top:%s; border-bottom:%s; 
-	border-left:%s; border-right:%s; 
+	border-top:%s; 
+	border-bottom:%s; 
+	border-left:%s; 
+	border-right:%s; 
 	text-align:%s;
 }
 
