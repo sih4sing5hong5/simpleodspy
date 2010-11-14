@@ -80,6 +80,10 @@ class SodsXml():
 	<condition_state>{16}</condition_state>
 	<condition_color>{17}</condition_color>
 	<condition_background_color>{18}</condition_background_color>
+	
+	<text_align>{19}</text_align>
+	<column_width>{20}</column_width>
+	<format>{21}</format>
 </cell>'''.format(i, j,
 				c.color, c.font_family, c.font_size,
 				c.background_color, 
@@ -88,7 +92,8 @@ class SodsXml():
 				text, c.value_type, c.value, 
 				formula, c.date_value, 
 				condition, c.condition_state, 
-				c.condition_color, c.condition_background_color)
+				c.condition_color, c.condition_background_color,
+				c.text_align, c.column_width, c.format)
 		
 		return out
 	
@@ -148,6 +153,10 @@ class SodsXml():
 			c.condition_state = eval(xml_cell[16].text)
 			c.condition_color = xml_cell[17].text
 			c.condition_background_color = xml_cell[18].text
+			
+			text_align = xml_cell[19].text
+			c.column_width = xml_cell[20].text
+			c.format = xml_cell[21].text
 			
 			# insert cell to table
 			self.table.setCellAt(i, j, c)
