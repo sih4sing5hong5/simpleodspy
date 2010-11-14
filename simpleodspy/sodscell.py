@@ -33,7 +33,7 @@ class SodsCell:
 		self.text_align = "start"
 		
 		# TableColumnProperties
-		self.column_width = "180pt"
+		self.column_width = "120pt"
 		
 		# TableCellProperties
 		self.background_color = "default"

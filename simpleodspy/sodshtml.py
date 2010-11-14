@@ -29,7 +29,8 @@ class SodsHtml():
 		# takes table
 		self.html_format = '''<html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-</head><body dir='%s'>
+%s
+</head><body>
 %s
 </body></html>'''
 	
@@ -58,8 +59,8 @@ class SodsHtml():
 		# we have string, continue
 		if len(n) < 4: return n
 		return self.fancyIntNumber(n[:-3]) + sep + n[-3:]
-		
-	def exportCellHtml(self, c, i = 0, j = 0):
+	
+	def exportCellCss (self, c, i = 0, j = 0):
 		''' export cell data as html table cell '''
 		
 		# if condition state is true use condition style
@@ -72,6 +73,7 @@ class SodsHtml():
 			background_color = "#ffffff"
 		
 		# adjust values for html
+		cell_name = self.table.encodeCellName(i, j)
 		font_size = c.font_size.replace('pt', 'px')
 		border_top = c.border_top.replace('pt', 'px')
 		border_bottom = c.border_bottom.replace('pt', 'px')
@@ -92,21 +94,22 @@ class SodsHtml():
 			
 		# create cell string
 		# we assume text is up to date
-		out = '''
-<td style="padding: 2px 10px; color:%s; font-family:'%s'; font-size:%s; 
-		background-color:%s; 
-		border-top:%s; border-bottom:%s; 
-		border-left:%s; border-right:%s; 
-		text-align:%s">''' % (color, c.font_family, font_size,
+		out = '''#%s {
+	padding: 2px 10px; color:%s; font-family:'%s'; font-size:%s; 
+	background-color:%s; 
+	border-top:%s; border-bottom:%s; 
+	border-left:%s; border-right:%s; 
+	text-align:%s;
+}
+
+''' % (cell_name, color, c.font_family, font_size,
 				background_color, 
 				border_top, border_bottom, border_left, border_right,
 				text_align)
-			
-		out = out.encode('utf-8') + text + '&nbsp;</td>'
 		
 		return out
 	
-	def exportHtml(self, i_max = None, j_max = None):
+	def exportTableCss (self, i_max = None, j_max = None):
 		''' export table in html format '''
 		
 		if not i_max: i_max = self.table.i_max
@@ -116,23 +119,81 @@ class SodsHtml():
 		self.table.updateTable(i_max, j_max)
 		
 		# create the table element of the html page
-		out = "<table style='border-collapse:collapse;'>\n"
+		out = "<style type='text/css'>\n"
+
+		#self.table.direction
+		# table
+		out += '''
+body {direction: %s}
+table { border-collapse:collapse; }
+''' % self.table.direction
+		
+		# cols
+		for j in range(1, j_max):
+			# adjust values for html
+			col_name = self.table.encodeColName(j)
+			c = self.table.getCellAt(0, j)
+				
+			# printout
+			out += ".%s {width:%s;}\n" % (col_name, c.column_width.replace('pt','px'))
+					
+		# rows
+		for i in range(1, i_max):
+			for j in range(1, j_max):
+				# adjust values for html
+				cell_name = self.table.encodeCellName(i, j)
+				c = self.table.getCellAt(i, j)
+					
+				# printout
+				out += self.exportCellCss(c, i, j)
+		out += "</style>"
+		
+		return out
+	
+	def exportTableHtml(self, i_max = None, j_max = None):
+		''' export table in html format '''
+		
+		if not i_max: i_max = self.table.i_max
+		if not j_max: j_max = self.table.j_max
+		
+		# update cells text
+		self.table.updateTable(i_max, j_max)
+		
+		# create the table element of the html page
+		out = "<table>\n"
 		
 		# columns
 		for j in range(1, j_max):
 			width = self.table.getCellAt(0, j).column_width.replace('pt', 'px')
-			out += "<col style='width:%s;' />\n" % width
+			out += "<col class='%s' />\n" % self.table.encodeColName(j)
 		
 		# rows
 		for i in range(1, i_max):
 			out += "<tr>\n"
 			for j in range(1, j_max):
-				out += self.exportCellHtml(self.table.getCellAt(i,j), i, j)
+				# adjust values for html
+				cell_name = self.table.encodeCellName(i, j)
+				c = self.table.getCell(cell_name)
+				
+				# get cell text
+				if c.value_type == 'float':
+					text = self.fancyNumber(c.value) 
+				else:
+					text = escape(c.text)
+					
+				# printout
+				out += "<td id = '%s'>%s &nbsp;</td>\n" % (cell_name, text)
 			out += "</tr>\n"
 		out += "</table>"
 		
-		return self.html_format % (self.table.direction, out)
-		
+		return out
+	
+	def exportHtml(self, i_max = None, j_max = None):
+		''' export table in html format '''
+			
+		return self.html_format % (self.exportTableCss(i_max, j_max),
+			self.exportTableHtml(i_max, j_max))
+	
 	def save(self, filename, i_max = None, j_max = None):
 		''' save table in xml format '''
 		
@@ -146,7 +207,7 @@ if __name__ == "__main__":
 	
 	from sodsspreadsheet import SodsSpreadSheet
 	
-	t = SodsSpreadSheet()
+	t = SodsSpreadSheet(20,6)
 	
 	print "Test spreadsheet naming:"
 	print "-----------------------"
