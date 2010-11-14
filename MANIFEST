@@ -14,3 +14,5 @@ simpleodspy/sodsspreadsheet.py
 simpleodspy/sodstable.py
 examples/hello_world.py
 examples/sods_server.py
+examples/functions.py
+examples/styles.py
