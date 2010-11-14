@@ -53,7 +53,11 @@ class SodsXml():
 			condition = escape(c.condition)
 		else:
 			condition = 'None'
-		
+		if c.format:
+			format = escape(format)
+		else:
+			format = 'None'
+			
 		# create cell string
 		out = '''
 <cell>
@@ -93,7 +97,7 @@ class SodsXml():
 				formula, c.date_value, 
 				condition, c.condition_state, 
 				c.condition_color, c.condition_background_color,
-				c.text_align, c.column_width, c.format)
+				c.text_align, c.column_width, format)
 		
 		return out
 	
@@ -156,7 +160,7 @@ class SodsXml():
 			
 			text_align = xml_cell[19].text
 			c.column_width = xml_cell[20].text
-			c.format = xml_cell[21].text
+			c.format = [None, unescape(xml_cell[21].text)][xml_cell[21].text != 'None']
 			
 			# insert cell to table
 			self.table.setCellAt(i, j, c)

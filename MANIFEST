@@ -13,3 +13,4 @@ simpleodspy/sodscell.py
 simpleodspy/sodsspreadsheet.py
 simpleodspy/sodstable.py
 examples/hello_world.py
+examples/sods_server.py

@@ -37,6 +37,10 @@ class SodsHtml():
 	def fancyNumber(self, f, sep = ",", neg = "-", pos = ""):
 		''' format a fancy string for a number '''
 		
+		# check if number is float ?
+		if not self.table.isFloat(f):
+			return eval(f)
+		
 		# split number
 		n_parts = str(f).split(".")
 		
