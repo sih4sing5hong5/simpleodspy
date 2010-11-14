@@ -89,13 +89,7 @@ class SodsHtml():
 			border = border_left
 			border_left = border_right
 			border_right = border
-			
-		# get cell text
-		if c.value_type == 'float':
-			text = self.fancyNumber(c.value) 
-		else:
-			text = escape(c.text)
-			
+		
 		# create cell string
 		# we assume text is up to date
 		out = '''#%s {
@@ -200,10 +194,10 @@ td.header { background-color:lightgray; text-align:center; width:50px; }
 				if c.value_type == 'float':
 					text = self.fancyNumber(c.value) 
 				else:
-					text = escape(c.text)
+					text = c.text
 					
 				# printout
-				out += "<td id = '%s'>%s &nbsp;</td>\n" % (cell_name, text)
+				out += "<td id = '%s'>%s &nbsp;</td>\n" % (cell_name, escape(text))
 			out += "</tr>\n"
 		out += "</table>"
 		
