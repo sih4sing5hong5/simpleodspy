@@ -27,7 +27,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from simpleodspy.sodsspreadsheet import SodsSpreadSheet
 from simpleodspy.sodshtml import SodsHtml
 
-t = SodsSpreadSheet(10,10)
+t = SodsSpreadSheet(16,8)
 	
 class HttpHandler(BaseHTTPRequestHandler):
 	
@@ -46,7 +46,7 @@ class HttpHandler(BaseHTTPRequestHandler):
 				if len(arg_t) == 2:
 					self.parameters[arg_t[0]] = unquote(arg_t[1])
 				else:
-					self.parameters[arg] = 1
+					self.parameters[arg] = ""
 			
 	def do_GET(self):
 		# get path
@@ -57,20 +57,41 @@ class HttpHandler(BaseHTTPRequestHandler):
 		self.send_header('Content-type', 'text/html')
 		self.end_headers()
 		
-		
+		# do table operations
 		if 'cell' in self.parameters.keys() and 'value' in self.parameters.keys():
-			t.setValue(self.parameters['cell'], self.parameters['value'])
-		if 'cell' in self.parameters.keys() and 'bgcolor' in self.parameters.keys():
-			print self.parameters['cell'], self.parameters['bgcolor']
-			t.setStyle(self.parameters['cell'], background_color = self.parameters['bgcolor'])
+			cell = self.parameters['cell']
+			value = self.parameters['value']
+			if cell != "":
+				t.setValue(self.parameters['cell'], self.parameters['value'])
 		
-		# page data
+		if 'cell' in self.parameters.keys() and 'bgcolor' in self.parameters.keys():
+			cell = self.parameters['cell']
+			value = self.parameters['value']
+			if cell != "":
+				t.setStyle(self.parameters['cell'], background_color = self.parameters['bgcolor'])
+		
+		# set form
+		form_html = '''
+		<form>
+		<table>
+		<tr><td>Name</td><td><input type='text' name = 'cell' /></td></tr>
+		<tr><td>Value</td><td><input type='text' name = 'value' /></td></tr>
+		<tr><td>Bckground color</td><td><input type='text' name = 'bgcolor' /></td></tr>
+		<tr><td></td><td><input type='submit' /></td></tr>
+		</table>
+		<form>
+		'''
+		
+		# print out page data
 		tw = SodsHtml(t)
-		print >> self.wfile,"<html><head>"
+		print >> self.wfile, "<html><head>"
 		print >> self.wfile, tw.exportTableCss()
-		print >> self.wfile,"</head><body>"
+		print >> self.wfile, "</head><body>"
+		print >> self.wfile, form_html
 		print >> self.wfile, tw.exportTableHtml(headers = True)
-		print >> self.wfile,"</body></html>"
+		print >> self.wfile, "</body></html>"
+		
+		# finish page
 		self.wfile.flush()
 
 # run web server and rates reader
