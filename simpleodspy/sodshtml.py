@@ -131,16 +131,17 @@ class SodsHtml():
 		out += '''
 body {direction: %s}
 table { border-collapse:collapse; }
+td.header { background-color:lightgray; text-align:center; width:50px; }
 ''' % self.table.direction
 		
-		# cols
+		# columns
 		for j in range(1, j_max):
 			# adjust values for html
 			col_name = self.table.encodeColName(j)
 			c = self.table.getCellAt(0, j)
 				
 			# printout
-			out += ".%s {width:%s;}\n" % (col_name, c.column_width.replace('pt','px'))
+			out += "col.%s {width:%s;}\n" % (col_name, c.column_width.replace('pt','px'))
 					
 		# rows
 		for i in range(1, i_max):
@@ -155,7 +156,7 @@ table { border-collapse:collapse; }
 		
 		return out
 	
-	def exportTableHtml(self, i_max = None, j_max = None):
+	def exportTableHtml(self, i_max = None, j_max = None, headers = False):
 		''' export table in html format '''
 		
 		if not i_max: i_max = self.table.i_max
@@ -168,13 +169,24 @@ table { border-collapse:collapse; }
 		out = "<table>\n"
 		
 		# columns
+		if headers:
+			out += "<col class='%s' />\n" % "header"
 		for j in range(1, j_max):
 			width = self.table.getCellAt(0, j).column_width.replace('pt', 'px')
 			out += "<col class='%s' />\n" % self.table.encodeColName(j)
 		
+		if headers:
+			out += "<tr>\n"
+			out += "<td class='%s'></td>\n" % "header"
+			for j in range(1, j_max):
+				out += "<td class='%s'>%s</td>\n" % ("header", self.table.encodeColName(j))
+			out += "</tr>\n"
+		
 		# rows
 		for i in range(1, i_max):
 			out += "<tr>\n"
+			if headers:
+				out += "<td class='%s'>%d</td>\n" % ("header", i)
 			for j in range(1, j_max):
 				# adjust values for html
 				cell_name = self.table.encodeCellName(i, j)
@@ -193,20 +205,20 @@ table { border-collapse:collapse; }
 		
 		return out
 	
-	def exportHtml(self, i_max = None, j_max = None):
+	def exportHtml(self, i_max = None, j_max = None, headers = False):
 		''' export table in html format '''
 			
 		return self.html_format % (self.exportTableCss(i_max, j_max),
-			self.exportTableHtml(i_max, j_max))
+			self.exportTableHtml(i_max, j_max, headers))
 	
-	def save(self, filename, i_max = None, j_max = None):
+	def save(self, filename, i_max = None, j_max = None, headers = False):
 		''' save table in xml format '''
 		
 		# if filename is - print to stdout
 		if filename == '-':
-			print self.exportHtml(i_max, j_max)
+			print self.exportHtml(i_max, j_max, headers)
 		else:
-			file(filename,"w").write(self.exportHtml(i_max, j_max))
+			file(filename,"w").write(self.exportHtml(i_max, j_max, headers))
 		
 if __name__ == "__main__":
 	

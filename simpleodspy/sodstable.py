@@ -31,7 +31,7 @@ class SodsTable:
 		self.j_max = j_max
 		
 		# table style
-		self.direction = 'rtl'
+		self.direction = 'ltr'
 		
 	def getCellAt(self, i, j):
 		''' get the cell object in i,j '''
