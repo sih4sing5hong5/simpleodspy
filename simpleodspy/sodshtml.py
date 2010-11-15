@@ -26,6 +26,9 @@ class SodsHtml():
 		
 		self.table = table
 		
+		# set default css table cell border
+		self.default_border = 'none;'
+		
 		# takes table
 		self.html_format = '''<html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -103,22 +106,24 @@ class SodsHtml():
 		# we assume text is up to date
 		out = '''#%s {
 	padding: 2px 10px; 
-	color:%s; 
-	font-family:'%s'; 
-	font-size:%s; 
-	background-color:%s; 
-	border-top:%s; 
-	border-bottom:%s; 
-	border-left:%s; 
-	border-right:%s; 
-	text-align:%s;
-	direction:%s;
-}
-
-''' % (cell_name, color, c.font_family, font_size,
+	color: %s; 
+	font-family: %s; 
+	font-size: %s; 
+	background-color: %s;
+	text-align: %s;
+	direction: %s;\n''' % (cell_name, color, c.font_family, font_size,
 				background_color, 
-				border_top, border_bottom, border_left, border_right,
 				text_align, direction)
+	
+		if border_top != 'none':
+			out += "	border-top: %s;\n" % border_top
+		if border_bottom != 'none':
+			out += "	border-bottom: %s;\n" % border_bottom
+		if border_left != 'none':
+			out += "	border-left: %s;\n" % border_left
+		if border_right != 'none':
+			out += "	border-right: %s;\n" % border_right
+		out += "}\n"
 		
 		return out
 	
@@ -137,26 +142,27 @@ class SodsHtml():
 		#self.table.direction
 		# table
 		out += '''
-body {direction: %s}
-table { border-collapse:collapse; }
-td.header { background-color:lightgray; text-align:center; width:50px; }
+body { direction: %s; }
+table { border-collapse: collapse; }
+td.header { background-color: lightgray; text-align: center; width: 50px; }
+td { border: %s; }
 a.info {
     position:relative;
     z-index:24;
     text-decoration:none;
 }
-a.info:hover { z-index:25; background-color:#efefef }
-a.info span { display: none }
+a.info:hover { z-index: 25; background-color: #efefef; }
+a.info span { display: none; }
 a.info:hover span {
-    display:block;
-    position:absolute;
-    padding:5px;
-    border:1px solid #1f1f1f;
-    background-color:#efefef;
-    color:#000000;
+    display: block;
+    position: absolute;
+    padding: 5px;
+    border: 1px solid #1f1f1f;
+    background-color: #efefef;
+    color: #000000;
     text-align: center;
 }
-''' % self.table.direction
+''' % (self.table.direction, self.default_border)
 		
 		# columns
 		for j in range(1, j_max):
@@ -165,7 +171,7 @@ a.info:hover span {
 			c = self.table.getCellAt(0, j)
 				
 			# printout
-			out += "col.%s {width:%s;}\n" % (col_name, c.column_width.replace('pt','px'))
+			out += "col.%s { width: %s; }\n" % (col_name, c.column_width.replace('pt','px'))
 					
 		# rows
 		for i in range(1, i_max):
