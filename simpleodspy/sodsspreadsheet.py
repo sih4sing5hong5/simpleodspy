@@ -33,6 +33,9 @@ class SodsSpreadSheet(SodsTable):
 		# init function list
 		self.registered_functions = []
 		
+		# do not recalculate automaticaly all cells
+		self.fast = False
+		
 		# add functions
 		self.registerFunction('AVERAGE', self.averageCallback)
 		self.registerFunction('IF', self.ifCallback)
@@ -332,7 +335,7 @@ class SodsSpreadSheet(SodsTable):
 		c = self.getCellAt(i, j)
 		
 		# if this is not a float cell return 0
-		if c.value_type == 'string' and c.text == "":
+		if  c.text == "":
 			return "0.0"
 		elif c.value_type == 'string' and c.text != "":
 			return "'%s'" % c.text
@@ -404,7 +407,7 @@ class SodsSpreadSheet(SodsTable):
 			
 		return value
 		
-	def updateOneCell(self, name, fast = False):
+	def updateOneCell(self, name):
 		''' update one cell text '''
 		
 		# parse i,j from cell name
@@ -413,7 +416,8 @@ class SodsSpreadSheet(SodsTable):
 		c = self.getCellAt(i, j)
 		
 		# in fast mode, if we have a value, do not re-calculate
-		if fast and c.value: return
+		if self.fast and c.value != None: 
+			return
 		
 		# check if the cell has formula
 		if c.formula:
@@ -456,7 +460,7 @@ class SodsSpreadSheet(SodsTable):
 		
 		self.setCellAt(i, j, c)
 		
-	def updateCell(self, name, fast = False):
+	def updateCell(self, name):
 		''' update cell text value '''
 		
 		# parse i,j from cell name
@@ -471,7 +475,7 @@ class SodsSpreadSheet(SodsTable):
 		
 		# clear old caculations
 		# loop and clear the cells value
-		if fast:
+		if self.fast:
 			for i in i_range:
 				for j in j_range:
 					c = self.getCellAt(i, j)
@@ -482,29 +486,32 @@ class SodsSpreadSheet(SodsTable):
 		for i in i_range:
 			for j in j_range:
 				cell = self.encodeCellName(i, j)
-				self.updateOneCell(cell, fast = fast)
+				self.updateOneCell(cell)
 	
-	def updateTable(self, i_max = None, j_max = None, fast = True):
+	def updateTable(self, i_max = None, j_max = None):
 		''' update table texts values '''
 		
 		if not i_max: i_max = self.i_max
 		if not j_max: j_max = self.j_max
 		
+		self.fast = True
+		
 		# clear old caculations
 		# loop and clear the cells value
-		if fast:
-			for i in range(1, i_max):
-				for j in range(1, j_max):
-					c = self.getCellAt(i, j)
-					if c.formula: c.value = None
-					self.setCellAt(i, j, c)
+		for i in range(1, i_max):
+			for j in range(1, j_max):
+				c = self.getCellAt(i, j)
+				if c.formula: c.value = None
+				self.setCellAt(i, j, c)
 				
 		# recalculate values
 		# loop and update the cells value
 		for i in range(1, i_max):
 			for j in range(1, j_max):
 				cell = self.encodeCellName(i, j)
-				self.updateOneCell(cell, fast = fast)
+				self.updateOneCell(cell)
+		
+		self.Fast = False
 		
 if __name__ == "__main__":
 	

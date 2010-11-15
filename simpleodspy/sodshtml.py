@@ -39,7 +39,11 @@ class SodsHtml():
 		
 		# check if number is float ?
 		if not self.table.isFloat(f):
-			return eval(f)
+			try:
+				out = eval(f)
+			except:
+				out = f
+			return out
 		
 		# split number
 		n_parts = str(f).split(".")
@@ -69,8 +73,8 @@ class SodsHtml():
 		
 		# if condition state is true use condition style
 		# we assume condition_state is up to date
-		color = [c.color, c.condition_color][c.condition_state]
-		background_color = [c.background_color, c.condition_background_color][c.condition_state]
+		color = [c.color, c.condition_color][c.condition_state == True]
+		background_color = [c.background_color, c.condition_background_color][c.condition_state == True]
 		
 		# check for default backround color
 		if background_color == "default":
@@ -85,10 +89,15 @@ class SodsHtml():
 		border_right = c.border_right.replace('pt', 'px')
 		text_align = c.text_align.replace('start', 'right').replace('end', 'left')
 		
+		direction = 'ltr'
 		if self.table.direction == 'rtl':
+			direction = 'rtl'
 			border = border_left
 			border_left = border_right
 			border_right = border
+		
+		if c.value_type == 'float':
+			direction = 'ltr'
 		
 		# create cell string
 		# we assume text is up to date
@@ -103,12 +112,13 @@ class SodsHtml():
 	border-left:%s; 
 	border-right:%s; 
 	text-align:%s;
+	direction:%s;
 }
 
 ''' % (cell_name, color, c.font_family, font_size,
 				background_color, 
 				border_top, border_bottom, border_left, border_right,
-				text_align)
+				text_align, direction)
 		
 		return out
 	
@@ -130,6 +140,22 @@ class SodsHtml():
 body {direction: %s}
 table { border-collapse:collapse; }
 td.header { background-color:lightgray; text-align:center; width:50px; }
+a.info {
+    position:relative;
+    z-index:24;
+    text-decoration:none;
+}
+a.info:hover { z-index:25; background-color:#efefef }
+a.info span { display: none }
+a.info:hover span {
+    display:block;
+    position:absolute;
+    padding:5px;
+    border:1px solid #1f1f1f;
+    background-color:#efefef;
+    color:#000000;
+    text-align: center;
+}
 ''' % self.table.direction
 		
 		# columns
@@ -154,7 +180,7 @@ td.header { background-color:lightgray; text-align:center; width:50px; }
 		
 		return out.encode('utf-8')
 	
-	def exportTableHtml(self, i_max = None, j_max = None, headers = False):
+	def exportTableHtml(self, i_max = None, j_max = None, headers = False, tip = False):
 		''' export table in html format '''
 		
 		if not i_max: i_max = self.table.i_max
@@ -192,31 +218,45 @@ td.header { background-color:lightgray; text-align:center; width:50px; }
 				
 				# get cell text
 				if c.value_type == 'float':
-					text = self.fancyNumber(c.value) 
+					text = self.fancyNumber(c.value)
 				else:
-					text = c.text
-					
+					text = escape(c.text)
+				
+				# clean up empty cells
+				text = text.strip()
+				if text == "": text = '&nbsp;'
+				
+				# add tooltip
+				if tip:
+					tip = cell_name
+					if c.formula:
+						tip += "&nbsp;=&nbsp;" + c.formula[1:]
+					else:
+						tip += "&nbsp;=&nbsp;" + text
+				
+					text = "<a class='info'>%s<span>%s</span></a>" % (text, tip)
+				
 				# printout
-				out += "<td id = '%s'>%s &nbsp;</td>\n" % (cell_name, escape(text))
+				out += "<td id = '%s'>%s</td>\n" % (cell_name, text)
 			out += "</tr>\n"
 		out += "</table>"
 		
 		return out
 	
-	def exportHtml(self, i_max = None, j_max = None, headers = False):
+	def exportHtml(self, i_max = None, j_max = None, headers = False, tip = False):
 		''' export table in html format '''
 		
 		return self.html_format % (self.exportTableCss(i_max, j_max),
-			self.exportTableHtml(i_max, j_max, headers))
+			self.exportTableHtml(i_max, j_max, headers, tip))
 	
-	def save(self, filename, i_max = None, j_max = None, headers = False):
+	def save(self, filename, i_max = None, j_max = None, headers = False, tip = False):
 		''' save table in xml format '''
 		
 		# if filename is - print to stdout
 		if filename == '-':
-			print self.exportHtml(i_max, j_max, headers)
+			print self.exportHtml(i_max, j_max, headers, tip)
 		else:
-			file(filename,"w").write(self.exportHtml(i_max, j_max, headers))
+			file(filename,"w").write(self.exportHtml(i_max, j_max, headers, tip))
 		
 if __name__ == "__main__":
 	
