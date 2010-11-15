@@ -152,7 +152,7 @@ td.header { background-color:lightgray; text-align:center; width:50px; }
 				out += self.exportCellCss(c, i, j)
 		out += "</style>"
 		
-		return out
+		return out.encode('utf-8')
 	
 	def exportTableHtml(self, i_max = None, j_max = None, headers = False):
 		''' export table in html format '''
@@ -205,7 +205,7 @@ td.header { background-color:lightgray; text-align:center; width:50px; }
 	
 	def exportHtml(self, i_max = None, j_max = None, headers = False):
 		''' export table in html format '''
-			
+		
 		return self.html_format % (self.exportTableCss(i_max, j_max),
 			self.exportTableHtml(i_max, j_max, headers))
 	
