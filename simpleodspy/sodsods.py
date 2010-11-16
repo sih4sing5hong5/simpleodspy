@@ -200,8 +200,26 @@ class SodsOds():
 				stylename = cell.getAttribute('stylename')
 				if stylename:
 					style = doc.getStyleByName(stylename)
-					datastyle = style.getAttribute('datastylename')
-				
+					
+					# parse data style
+					# this only work on patch'd version of odfpy
+					# file:opendocument.py, function:build_caches
+					# -if element.qname == (STYLENS, u'style')):
+					# +if element.qname in ((STYLENS, u'style'), (NUMBERNS,u'number-style')):
+					datastylename = style.getAttribute('datastylename')
+					if datastylename:
+						datastyle = doc.getStyleByName(datastylename)
+						if datastyle:
+							p = datastyle.getElementsByType(Number)[0]
+							if p:
+								decimalplaces = p.getAttribute('decimalplaces')
+								grouping = p.getAttribute('grouping')
+								
+								if decimalplaces == '2' and grouping == 'true':
+									c.format = "#,##0.00"
+								else:
+									c.format = ""
+					
 					for p in style.getElementsByType(TextProperties):
 						c.font_family = p.getAttribute('fontfamily')
 						if not c.font_family:
@@ -299,6 +317,10 @@ class SodsOds():
 			ncs.addElement(Number(decimalplaces="2", minintegerdigits="1", grouping="true"))
 			odfdoc.styles.addElement(ncs)
 			
+			ncs2 = NumberStyle(name="ncs2")
+			ncs2.addElement(Number(decimalplaces="0", minintegerdigits="1", grouping="false"))
+			odfdoc.styles.addElement(ncs2)
+			
 			dcs = DateStyle(name="dcs")
 			dcs.addElement(Year(style='long'))
 			dcs.addElement(Text(text = u'-'))
@@ -316,8 +338,11 @@ class SodsOds():
 				if c.value_type == 'date':
 					datastylename = "dcs"
 				else:
-					datastylename = "ncs"
-				
+					if c.format == "":
+						datastylename = "ncs2"
+					if c.format == "#,##0.00":
+						datastylename = "ncs"
+					
 				# get cell style id
 				if (c.condition):
 					style_id = (datastylename + c.color + c.font_size + c.font_family + 
