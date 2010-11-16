@@ -229,15 +229,17 @@ class SodsXls():
 				pattern = self.getFill(background_color, fill_id)
 				
 				# get style
-				style_id = font_id + border_id + fill_id
+				style_id = font_id + border_id + fill_id + c.format
 				style = self.getStyle(fnt, borders, pattern, style_id)
 				
 				# set xls text
 				if (c.formula and c.formula[0] == '='):
-					style.num_format_str = '#,##0.00'
+					if c.format == "#,##0.00":
+						style.num_format_str = "#,##0.00"
 					ws.write(i - 1, j - 1, Formula(c.formula[1:]), style)
 				elif c.value_type == 'float' and self.table.isFloat(c.value):
-					style.num_format_str = '#,##0.00'
+					if c.format == "#,##0.00":
+						style.num_format_str = "#,##0.00"
 					ws.write(i - 1, j - 1, float(c.value), style)
 				elif c.value_type == 'date':
 					style.num_format_str = 'YYYY-MM-DD'
