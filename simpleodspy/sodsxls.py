@@ -199,6 +199,10 @@ class SodsXls():
 		w = Workbook(encoding='utf-8')
 		ws = w.add_sheet("sheet 1")
 		
+		# set table direction
+		if self.table.direction == 'rtl':
+			ws.cols_right_to_left = True
+		
 		# make sure values are up to date
 		# loop and update the cells value
 		for i in range(1, i_max):
