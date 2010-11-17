@@ -44,7 +44,11 @@ class SodsXls():
 		
 		# find the width in pt
 		try:
-			width = int(re.search('(.+)pt', border).group(1))
+			width = float(re.search('(.+)pt', border).group(1))
+			if width > 0 and width < 0.5:
+				width = 0.5
+			
+			width = int(width + 0.5)
 		except:
 			width = 0
 			

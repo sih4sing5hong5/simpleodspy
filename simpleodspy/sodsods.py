@@ -85,8 +85,8 @@ class SodsOds():
 		width = re.search('[0-9.]+((in)|(cm)|(pt))', out)
 		if width:
 			width = width.group(0)
-			width = re.sub('([0-9.]+)in', lambda s: str(int(float(s.group(1)) * 72.0 + 1)) + "pt", width)
-			width = re.sub('([0-9.]+)cm', lambda s: str(int(float(s.group(1)) * 72.0 / 2.54 + 1)) + "pt", width)
+			width = re.sub('([0-9.]+)in', lambda s: str(float(s.group(1)) * 72.0) + "pt", width)
+			width = re.sub('([0-9.]+)cm', lambda s: str(float(s.group(1)) * 72.0 / 2.54) + "pt", width)
 		else:
 			width = "1pt"
 		
