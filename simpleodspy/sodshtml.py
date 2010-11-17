@@ -18,6 +18,7 @@
 # Copyright (C) 2010 Yaacov Zamir (2010) <kzamir@walla.co.il>
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
+import re
 from xml.sax.saxutils import escape
 
 class SodsHtml():
@@ -71,6 +72,47 @@ class SodsHtml():
 		if len(n) < 4: return n
 		return self.fancyIntNumber(n[:-3]) + sep + n[-3:]
 	
+	def translateBorderToPx(self, string):
+		''' translte inch and cm to pt '''
+		
+		if not string or string == "none": return "none"
+		
+		# translate units
+		width = re.search('([0-9.]+)((in)|(cm)|(pt))', string)
+		if width:
+			unit = width.group(2)
+			width = float(width.group(1))
+			
+			if unit == 'in':
+				width *= 72.0
+			elif unit == 'cm':
+				width *= 72.0 / 2.54
+			elif unit == 'pt':
+				width = width
+			else:
+				width = 0
+			
+			if width > 0 and width < 0.5:
+				width = 1
+			
+			width = str(int(width + 0.5)) + "px"
+		else:
+			width = "0px"
+		
+		# FIXME: chack style
+		style = "solid"
+		
+		# check color
+		color = re.search('#......', string)
+		if color:
+			color = color.group(0)
+		else:
+			color = "#000000"
+		
+		out = "%s %s %s" % (width, style, color)
+		
+		return out
+		
 	def exportCellCss (self, c, i = 0, j = 0):
 		''' export cell data as html table cell '''
 		
@@ -86,10 +128,10 @@ class SodsHtml():
 		# adjust values for html
 		cell_name = self.table.encodeCellName(i, j)
 		font_size = c.font_size.replace('pt', 'px')
-		border_top = c.border_top.replace('pt', 'px')
-		border_bottom = c.border_bottom.replace('pt', 'px')
-		border_left = c.border_left.replace('pt', 'px')
-		border_right = c.border_right.replace('pt', 'px')
+		border_top = self.translateBorderToPx(c.border_top)
+		border_bottom = self.translateBorderToPx(c.border_bottom)
+		border_left = self.translateBorderToPx(c.border_left)
+		border_right = self.translateBorderToPx(c.border_right)
 		text_align = c.text_align.replace('start', 'right').replace('end', 'left')
 		
 		direction = 'ltr'

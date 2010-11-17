@@ -45,17 +45,18 @@ class SodsXls():
 		# find the width in pt
 		try:
 			width = float(re.search('(.+)pt', border).group(1))
-			if width > 0 and width < 0.5:
-				width = 0.5
+			
+			if width > 0 and width < 1:
+				width = 1
 			
 			width = int(width + 0.5)
 		except:
 			width = 0
-			
+		
 		# conver to excel widths
 		if width > 3: width = 3
 		
-		return [Borders.NO_LINE, Borders.HAIR, Borders.THIN, Borders.THICK][width]
+		return [Borders.NO_LINE, Borders.HAIR, Borders.MEDIUM, Borders.THICK][width]
 	
 	def convertXlsBorderColor(self, border):
 		''' return the xls border color index '''
