@@ -362,14 +362,19 @@ class SodsOds():
 				
 				# create new ods cell
 				if (c.formula and c.formula[0] == '=' and c.formula[:4] != '=uni'):
-					tc = TableCell(valuetype = c.value_type, 
-						formula = c.formula, value = c.value, stylename = style_name)
+					if self.table.isFloat(c.value):
+						tc = TableCell(valuetype = c.value_type, 
+							formula = c.formula, value = float(c.value), stylename = style_name)
+					else:
+						tc = TableCell(valuetype = c.value_type, 
+							formula = c.formula, 
+							value = 0, stylename = style_name)
 				elif (c.value_type == 'date'):
 					tc = TableCell(valuetype = c.value_type, 
 						datevalue = c.date_value, stylename = style_name)
 				elif (c.value_type == 'float') and self.table.isFloat(c.value):
 					tc = TableCell(valuetype = c.value_type, 
-						value = c.value, stylename = style_name)
+						value = float(c.value), stylename = style_name)
 				else:
 					tc = TableCell(valuetype = 'string', stylename = style_name)
 				
