@@ -173,6 +173,7 @@ class SodsHtml():
 		# create cell string
 		# we assume text is up to date
 		out = '''#%s {
+	white-space: nowrap;
 	padding: 2px 10px; 
 	color: %s; 
 	font-family: %s; 
@@ -218,6 +219,7 @@ a.info {
     position:relative;
     z-index:24;
     text-decoration:none;
+    white-space: nowrap;
 }
 a.info:hover { z-index: 25; background-color: #efefef; }
 a.info span { display: none; }
