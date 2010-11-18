@@ -208,6 +208,13 @@ class SodsXls():
 		if self.table.direction == 'rtl':
 			ws.cols_right_to_left = True
 		
+		for j in range(1, j_max):
+			colname = "col" + str(j)
+			c = self.table.getCellAt(0, j)
+			width = float(c.column_width.replace('pt',''))
+			width = int(width * 50)
+			ws.col(j - 1).width = width 
+		
 		# make sure values are up to date
 		# loop and update the cells value
 		for i in range(1, i_max):

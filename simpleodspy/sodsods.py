@@ -297,13 +297,16 @@ class SodsOds():
 		ts.addElement(TextProperties(fontfamily = SodsCell().font_family, fontsize = SodsCell().font_size))
 		odfdoc.styles.addElement(ts)
 		
-		cs = Style(name = "cs", family = "table-column")
-		cs.addElement(TableColumnProperties(columnwidth = "2.8cm", breakbefore = "auto"))
-		odfdoc.automaticstyles.addElement(cs)
-
 		# create columns
 		for j in range(1, j_max):
-			table.addElement(TableColumn(stylename = "cs", defaultcellstylename = "ts"))
+			colname = "col" + str(j)
+			c = self.table.getCellAt(0, j)
+			width = c.column_width
+			cs = Style(name = colname, family = "table-column")
+			cs.addElement(TableColumnProperties(columnwidth = width, breakbefore = "auto"))
+			odfdoc.automaticstyles.addElement(cs)
+
+			table.addElement(TableColumn(stylename = colname, defaultcellstylename = "ts"))
 			
 		# make sure values are up to date
 		# loop and update the cells value

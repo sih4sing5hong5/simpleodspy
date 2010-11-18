@@ -72,6 +72,32 @@ class SodsHtml():
 		if len(n) < 4: return n
 		return self.fancyIntNumber(n[:-3]) + sep + n[-3:]
 	
+	def translateWidthToPx(self, string):
+		''' translte inch and cm to pt '''
+		
+		if not string or string == "none": return "120px"
+		
+		# translate units
+		width = re.search('([0-9.]+)((in)|(cm)|(pt))', string)
+		if width:
+			unit = width.group(2)
+			width = float(width.group(1))
+			
+			if unit == 'in':
+				width *= 72.0 * 2.54 
+			elif unit == 'cm':
+				width *= 72.0
+			elif unit == 'pt':
+				width = width * 2.54 
+			else:
+				width = 120
+			
+			width = str(int(width + 0.5)) + "px"
+		else:
+			width = "120px"
+				
+		return width
+		
 	def translateBorderToPx(self, string):
 		''' translte inch and cm to pt '''
 		
@@ -244,7 +270,7 @@ a.info:hover span {
 		if headers:
 			out += "<col class='%s' />\n" % "header"
 		for j in range(1, j_max):
-			width = self.table.getCellAt(0, j).column_width.replace('pt', 'px')
+			width = self.translateWidthToPx(self.table.getCellAt(0, j).column_width)
 			out += "<col class='%s' />\n" % self.table.encodeColName(j)
 		
 		if headers:
