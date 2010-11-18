@@ -361,7 +361,7 @@ class SodsOds():
 				style_name = self.getStyle(c, cell, datastylename, style_id, odfdoc)
 				
 				# create new ods cell
-				if (c.formula and c.formula[0] == '='):
+				if (c.formula and c.formula[0] == '=' and c.formula[:4] != '=uni'):
 					tc = TableCell(valuetype = c.value_type, 
 						formula = c.formula, value = c.value, stylename = style_name)
 				elif (c.value_type == 'date'):

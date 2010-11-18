@@ -249,7 +249,7 @@ class SodsXls():
 				style = self.getStyle(fnt, borders, pattern, style_id)
 				
 				# set xls text
-				if (c.formula and c.formula[0] == '='):
+				if (c.formula and c.formula[0] == '=' and c.formula[:4] != '=uni'):
 					if c.format == "#,##0.00":
 						style.num_format_str = "#,##0.00"
 					ws.write(i - 1, j - 1, Formula(c.formula[1:]), style)
