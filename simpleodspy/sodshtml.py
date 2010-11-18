@@ -309,7 +309,7 @@ a.info:hover span {
 				if tip:
 					tip = cell_name
 					if c.formula:
-						tip += "&nbsp;=&nbsp;" + c.formula[1:]
+						tip += "&nbsp;=&nbsp;" + escape(c.formula[1:])
 					else:
 						tip += "&nbsp;=&nbsp;" + text
 				

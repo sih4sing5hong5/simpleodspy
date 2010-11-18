@@ -126,6 +126,7 @@ class SodsXls():
 		elif color <= 0xFF99CC: xlscolor = 38
 		elif color <= 0xFFCC00: xlscolor = 44
 		elif color <= 0xFFCC99: xlscolor = 40
+		elif color <= 0xFFD400: xlscolor = 44
 		elif color <= 0xFFFF00: xlscolor = 6
 		elif color <= 0xFFFF00: xlscolor = 27
 		elif color <= 0xFFFF99: xlscolor = 36
