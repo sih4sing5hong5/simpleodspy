@@ -34,7 +34,7 @@ class SodsHtml():
 		self.styles = {}
 		
 		# takes table
-		self.html_format = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+		self.html_format = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN">
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 %s
@@ -168,9 +168,6 @@ class SodsHtml():
 			border = border_left
 			border_left = border_right
 			border_right = border
-		
-		if c.value_type == 'float':
-			direction = 'ltr'
 		
 		# check style cache
 		style_id = (color + font_size + c.font_family + 
@@ -337,7 +334,7 @@ a.info:hover span {
 						tip += "&nbsp;=&nbsp;" + escape(c.formula[1:])
 					else:
 						tip += "&nbsp;=&nbsp;" + text
-				
+					
 					text = "<a class='info'>%s<span>%s</span></a>" % (text, tip)
 				
 				# printout
