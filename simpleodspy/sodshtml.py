@@ -338,7 +338,11 @@ a.info:hover span {
 					text = "<a class='info'>%s<span>%s</span></a>" % (text, tip)
 				
 				# printout
-				out += "<td class = '%s'>%s</td>\n" % (self.cell_styles[cell_name], text)
+				if c.value_type == 'float':
+					out += "<td class = '%s'>%s</td>\n" % (self.cell_styles[cell_name], "<span dir='ltr'>%s</span>" % text)
+				else:
+					out += "<td class = '%s'>%s</td>\n" % (self.cell_styles[cell_name], text)
+					
 			out += "</tr>\n"
 		out += "</table></div>"
 		
