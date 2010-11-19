@@ -214,7 +214,6 @@ class SodsHtml():
 body { direction: %s; }
 table { border-collapse: collapse; }
 td.header { background-color: lightgray; text-align: center; width: 50px; }
-td { border: %s; }
 a.info {
     position:relative;
     z-index:24;
@@ -232,7 +231,10 @@ a.info:hover span {
     color: #000000;
     text-align: center;
 }
-''' % (self.table.direction, self.default_border)
+''' % self.table.direction
+		
+		if self.default_border != 'none':
+			out += "td { border: %s; }" % self.default_border
 		
 		# columns
 		for j in range(1, j_max):
