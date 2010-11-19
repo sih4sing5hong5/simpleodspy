@@ -30,8 +30,12 @@ class SodsHtml():
 		# set default css table cell border
 		self.default_border = 'none;'
 		
+		self.cell_styles = {}
+		self.styles = {}
+		
 		# takes table
-		self.html_format = '''<html><head>
+		self.html_format = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 %s
 </head><body>
@@ -88,15 +92,13 @@ class SodsHtml():
 			elif unit == 'cm':
 				width *= 72.0
 			elif unit == 'pt':
-				width = width * 2.54 
+				width = width
 			else:
 				width = 120
-			
-			width = str(int(width + 0.5)) + "px"
 		else:
-			width = "120px"
+			width = 120
 				
-		return width
+		return int(width + 0.5)
 		
 	def translateBorderToPx(self, string):
 		''' translte inch and cm to pt '''
@@ -170,9 +172,22 @@ class SodsHtml():
 		if c.value_type == 'float':
 			direction = 'ltr'
 		
+		# check style cache
+		style_id = (color + font_size + c.font_family + 
+			background_color + border_top + border_bottom + 
+			border_left + border_right + text_align + direction)
+		
+		if style_id in self.styles.keys():
+			self.cell_styles[cell_name] = self.styles[style_id]
+			return ""
+		
+		# create new styel entry in cache
+		self.cell_styles[cell_name] = cell_name
+		self.styles[style_id] = cell_name
+		
 		# create cell string
 		# we assume text is up to date
-		out = '''#%s {
+		out = '''.%s {
 	white-space: nowrap;
 	padding: 2px 10px; 
 	color: %s; 
@@ -205,13 +220,17 @@ class SodsHtml():
 		# update cells text
 		self.table.updateTable(i_max, j_max)
 		
+		# clear styles cache
+		self.cell_styles = {}
+		self.styles = {}
+		
 		# create the table element of the html page
 		out = "<style type='text/css'>\n"
 
 		#self.table.direction
 		# table
 		out += '''
-body { direction: %s; }
+.main { direction: %s; }
 table { border-collapse: collapse; }
 td.header { background-color: lightgray; text-align: center; width: 50px; }
 a.info {
@@ -237,14 +256,19 @@ a.info:hover span {
 			out += "td { border: %s; }" % self.default_border
 		
 		# columns
+		total_width = 0;
 		for j in range(1, j_max):
 			# adjust values for html
 			col_name = self.table.encodeColName(j)
 			c = self.table.getCellAt(0, j)
-				
+			width = self.translateWidthToPx(self.table.getCellAt(0, j).column_width)
+			total_width += width
+			
 			# printout
-			out += "col.%s { width: %s; }\n" % (col_name, c.column_width.replace('pt','px'))
-					
+			out += "col.%s { width: %dpx; }\n" % (col_name, width)
+		
+		out += "body { width: %dpx; }\n" % total_width
+		
 		# rows
 		for i in range(1, i_max):
 			for j in range(1, j_max):
@@ -268,13 +292,12 @@ a.info:hover span {
 		self.table.updateTable(i_max, j_max)
 		
 		# create the table element of the html page
-		out = "<table>\n"
+		out = "<div class='main'><table>\n"
 		
 		# columns
 		if headers:
 			out += "<col class='%s' />\n" % "header"
 		for j in range(1, j_max):
-			width = self.translateWidthToPx(self.table.getCellAt(0, j).column_width)
 			out += "<col class='%s' />\n" % self.table.encodeColName(j)
 		
 		if headers:
@@ -308,7 +331,7 @@ a.info:hover span {
 				if text == "": text = '&nbsp;'
 				
 				# add tooltip
-				if tip:
+				elif tip:
 					tip = cell_name
 					if c.formula:
 						tip += "&nbsp;=&nbsp;" + escape(c.formula[1:])
@@ -318,9 +341,9 @@ a.info:hover span {
 					text = "<a class='info'>%s<span>%s</span></a>" % (text, tip)
 				
 				# printout
-				out += "<td id = '%s'>%s</td>\n" % (cell_name, text)
+				out += "<td class = '%s'>%s</td>\n" % (self.cell_styles[cell_name], text)
 			out += "</tr>\n"
-		out += "</table>"
+		out += "</table></div>"
 		
 		return out
 	
