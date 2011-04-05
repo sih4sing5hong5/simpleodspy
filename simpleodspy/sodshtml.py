@@ -287,6 +287,7 @@ a.info:hover span {
 		
 		# update cells text
 		self.table.updateTable(i_max, j_max)
+		self.table.updateTable(i_max, j_max)
 		
 		# create the table element of the html page
 		out = "<div class='main'><table>\n"
