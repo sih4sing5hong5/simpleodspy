@@ -250,7 +250,7 @@ class SodsSpreadSheet(SodsTable):
 		# get the cell list
 		cell_list = self.parseCellRangeToCells(cell_range)
 		
-		out = "(" + ",".join(cell_list) + ")"
+		out = "(" + ",".join(cell_list) + ",)"
 			
 		# return the sum as string
 		return out

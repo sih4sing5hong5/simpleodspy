@@ -38,7 +38,7 @@ class SodsHtml():
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 %s
-</head><body>
+</head><body onLoad="window.scrollTo(%d,0);">
 %s
 </body></html>'''
 	
@@ -318,7 +318,8 @@ a.info:hover span {
 				# get cell text
 				if c.value_type == 'float':
 					if c.format == "":
-						text = str(c.value)
+						#text = str(c.value)
+						text = self.fancyNumber(c.value)
 					if c.format == "#,##0.00":
 						text = self.fancyNumber(c.value)
 				else:
@@ -352,7 +353,12 @@ a.info:hover span {
 	def exportHtml(self, i_max = None, j_max = None, headers = False, tip = False):
 		''' export table in html format '''
 		
+		left = 0
+		if self.table.direction == 'rtl':
+			left = 9999
+		
 		return self.html_format % (self.exportTableCss(i_max, j_max),
+			left,
 			self.exportTableHtml(i_max, j_max, headers, tip))
 	
 	def save(self, filename, i_max = None, j_max = None, headers = False, tip = False):
