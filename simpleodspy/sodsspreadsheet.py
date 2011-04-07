@@ -223,7 +223,9 @@ class SodsSpreadSheet(SodsTable):
 			value = None, formula = None,
 			date_value = None,
 			condition = None, condition_state = None,
-			condition_color = None, condition_background_color = None):
+			condition_color = None, condition_background_color = None,
+			text_align = None, format = None,
+			column_width = None):
 		''' set values of cell object range in i, j ranges '''
 		
 		# parse i,j from cell name
@@ -238,7 +240,9 @@ class SodsSpreadSheet(SodsTable):
 			value, formula,
 			date_value,
 			condition, condition_state,
-			condition_color, condition_background_color)
+			condition_color, condition_background_color,
+			text_align, format,
+			column_width)
 		
 	def getRangeString(self, cells):
 		''' create a string of cells from range '''

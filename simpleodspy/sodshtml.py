@@ -318,8 +318,7 @@ a.info:hover span {
 				# get cell text
 				if c.value_type == 'float':
 					if c.format == "":
-						#text = str(c.value)
-						text = self.fancyNumber(c.value)
+						text = str(c.value)
 					if c.format == "#,##0.00":
 						text = self.fancyNumber(c.value)
 				else:
