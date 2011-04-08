@@ -146,8 +146,8 @@ class SodsHtml():
 		
 		# if condition state is true use condition style
 		# we assume condition_state is up to date
-		color = [c.color, c.condition_color][c.condition_state == True]
-		background_color = [c.background_color, c.condition_background_color][c.condition_state == True]
+		color = [str(c.color), str(c.condition_color)][c.condition_state == True]
+		background_color = [str(c.background_color), str(c.condition_background_color)][c.condition_state == True]
 		
 		# check for default backround color
 		if background_color == "default":
@@ -215,7 +215,8 @@ class SodsHtml():
 		if not j_max: j_max = self.table.j_max
 		
 		# update cells text
-		self.table.updateTable(i_max, j_max)
+		#self.table.updateTable(i_max, j_max)
+		#self.table.updateTable(i_max, j_max)
 		
 		# clear styles cache
 		self.cell_styles = {}
@@ -286,8 +287,8 @@ a.info:hover span {
 		if not j_max: j_max = self.table.j_max
 		
 		# update cells text
-		self.table.updateTable(i_max, j_max)
-		self.table.updateTable(i_max, j_max)
+		#self.table.updateTable(i_max, j_max)
+		#self.table.updateTable(i_max, j_max)
 		
 		# create the table element of the html page
 		out = "<div class='main'><table>\n"
@@ -355,6 +356,13 @@ a.info:hover span {
 		left = 0
 		if self.table.direction == 'rtl':
 			left = 9999
+		
+		if not i_max: i_max = self.table.i_max
+		if not j_max: j_max = self.table.j_max
+		
+		# update cells text
+		self.table.updateTable(i_max, j_max)
+		self.table.updateTable(i_max, j_max)
 		
 		return self.html_format % (self.exportTableCss(i_max, j_max),
 			left,

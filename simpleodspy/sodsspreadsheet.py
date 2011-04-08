@@ -445,12 +445,14 @@ class SodsSpreadSheet(SodsTable):
 				c.text = "!ERR"
 			
 		# check if the cell has condition
+		c.condition_state = False
 		if c.condition:
 			# replace the cell-content() function with the cells value
 			if (c.value != None):
 				value = c.value
 			else:
 				value = self.getOneCellValue(name)
+			
 			formula = c.condition.replace("cell-content()", str(value))
 		
 			# evaluate the condition formula
