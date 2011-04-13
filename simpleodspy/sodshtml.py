@@ -318,10 +318,17 @@ a.info:hover span {
 				
 				# get cell text
 				if c.value_type == 'float':
-					if c.format == "":
-						text = str(c.value)
-					if c.format == "#,##0.00":
-						text = self.fancyNumber(c.value)
+					try:
+						# is this a number ?
+						f = float(c.value)
+						
+						# format number
+						if c.format == "":
+							text = str(f)
+						if c.format == "#,##0.00":
+							text = self.fancyNumber(f)
+					except:
+						text = "#ERR"
 				else:
 					text = escape(c.text)
 				
