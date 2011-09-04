@@ -327,6 +327,8 @@ a.info:hover span {
 							text = str(f)
 						if c.format == "#,##0.00":
 							text = self.fancyNumber(f)
+						if c.format == "#,##0":
+							text = str(int(f))
 					except:
 						text = "#ERR"
 				else:
