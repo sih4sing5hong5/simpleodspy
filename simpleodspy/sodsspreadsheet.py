@@ -436,6 +436,7 @@ class SodsSpreadSheet(SodsTable):
 				if not self.isFloat(value):
 					c.value = "'%s'" % value
 					c.text = value
+					c.value_type = 'string'
 				else:
 					# update cell value and text string
 					c.value = value
