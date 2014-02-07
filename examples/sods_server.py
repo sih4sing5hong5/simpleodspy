@@ -19,10 +19,10 @@
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
 import sys
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import getopt
-from urlparse import unquote
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import unquote
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from simpleodspy.sodsspreadsheet import SodsSpreadSheet
 from simpleodspy.sodshtml import SodsHtml
@@ -58,13 +58,13 @@ class HttpHandler(BaseHTTPRequestHandler):
 		self.end_headers()
 		
 		# do table operations
-		if 'cell' in self.parameters.keys() and 'value' in self.parameters.keys():
+		if 'cell' in list(self.parameters.keys()) and 'value' in list(self.parameters.keys()):
 			cell = self.parameters['cell']
 			value = self.parameters['value']
 			if cell != "":
 				t.setValue(self.parameters['cell'], self.parameters['value'])
 		
-		if 'cell' in self.parameters.keys() and 'bgcolor' in self.parameters.keys():
+		if 'cell' in list(self.parameters.keys()) and 'bgcolor' in list(self.parameters.keys()):
 			cell = self.parameters['cell']
 			value = self.parameters['value']
 			if cell != "":
@@ -84,12 +84,12 @@ class HttpHandler(BaseHTTPRequestHandler):
 		
 		# print out page data
 		tw = SodsHtml(t)
-		print >> self.wfile, "<html><head>"
-		print >> self.wfile, tw.exportTableCss()
-		print >> self.wfile, "</head><body>"
-		print >> self.wfile, form_html
-		print >> self.wfile, tw.exportTableHtml(headers = True)
-		print >> self.wfile, "</body></html>"
+		print("<html><head>", file=self.wfile)
+		print(tw.exportTableCss(), file=self.wfile)
+		print("</head><body>", file=self.wfile)
+		print(form_html, file=self.wfile)
+		print(tw.exportTableHtml(headers = True), file=self.wfile)
+		print("</body></html>", file=self.wfile)
 		
 		# finish page
 		self.wfile.flush()
@@ -101,8 +101,8 @@ def main(argv=None):
 		
 	try:
 		opts, args = getopt.getopt(argv[1:], "hp:", ["help","port"])
-	except getopt.error, msg:
-		print >>sys.stderr, msg
+	except getopt.error as msg:
+		print(msg, file=sys.stderr)
 		return 2
 	
 	# default port
@@ -124,20 +124,20 @@ def main(argv=None):
 	try:
 		# check if a server already running
 		try:
-			f = urllib.urlopen("http://127.0.0.1:%s/" % port, proxies={})
+			f = urllib.request.urlopen("http://127.0.0.1:%s/" % port, proxies={})
 			
-			print """
+			print("""
 			A web server already using port %s
 			Quiting.
-			""" % (port)
+			""" % (port))
 			return
 		except:
 			pass
 		
-		print """
+		print("""
 		Web access using port %s
 		Press CTRL-C to stop the server.
-		""" % (port)
+		""" % (port))
 		
 		# create server and reader objects
 		server = HTTPServer(('', port), HttpHandler)
@@ -146,9 +146,9 @@ def main(argv=None):
 		server.serve_forever()
 	
 	except KeyboardInterrupt:
-		print """
+		print("""
 		Quiting.
-		"""
+		""")
 	
 	finally:
 		if server:	

@@ -22,7 +22,7 @@ from xml.sax.saxutils import escape
 from xml.etree import ElementTree
 from xml.sax.saxutils import unescape
 
-from sodscell import SodsCell
+from .sodscell import SodsCell
 
 class SodsXml():
 	def __init__(self, table, i_max = 30, j_max = 30):
@@ -170,7 +170,7 @@ class SodsXml():
 		
 		# if filename is - print to stdout
 		if filename == '-':
-			print self.exportXml(i_max, j_max)
+			print(self.exportXml(i_max, j_max))
 		else:
 			file(filename,"w").write(self.exportXml(i_max, j_max))
 		
@@ -181,12 +181,12 @@ class SodsXml():
 		
 if __name__ == "__main__":
 	
-	from sodsspreadsheet import SodsSpreadSheet
+	from .sodsspreadsheet import SodsSpreadSheet
 	
 	t = SodsSpreadSheet()
 	
-	print "Test spreadsheet naming:"
-	print "-----------------------"
+	print("Test spreadsheet naming:")
+	print("-----------------------")
 	
 	t.setStyle("A1", text = "Hello world")
 	t.setStyle("A1:G2", background_color = "#00ff00")

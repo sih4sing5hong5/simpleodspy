@@ -18,7 +18,7 @@
 # Copyright (C) 2010 Yaacov Zamir (2010) <kzamir@walla.co.il>
 # Author: Yaacov Zamir (2010) <kzamir@walla.co.il>
 
-from sodscell import SodsCell
+from .sodscell import SodsCell
 
 class SodsTable:
 	def __init__(self, i_max = 30, j_max = 30):
@@ -101,6 +101,6 @@ if __name__ == "__main__":
 	t = SodsTable()
 	
 	t.setAt(1,1, text = "hello world")
-	t.setAt(1,range(1,3), background_color = "#00ff00")
+	t.setAt(1,list(range(1,3)), background_color = "#00ff00")
 	
 	

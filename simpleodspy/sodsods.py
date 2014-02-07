@@ -30,7 +30,7 @@ from odf.style import Style, TableProperties, TextProperties, TableCellPropertie
 from odf.number import NumberStyle, DateStyle, CurrencyStyle, TextStyle, Number, Text, Day, Month, Year, Era
 from odf.text import P, Date
 
-from sodscell import SodsCell
+from .sodscell import SodsCell
 
 class SodsOds():
 	def __init__(self, table, i_max = 30, j_max = 30):
@@ -42,7 +42,7 @@ class SodsOds():
 	def getStyle(self, c, cell, datastylename, style_id, odfdoc):
 		''' get a style_name by style_id '''
 		
-		if not style_id in self.styles.keys():
+		if not style_id in list(self.styles.keys()):
 			# create new style
 			cs = Style(name = cell, family = 'table-cell', datastylename=datastylename)
 			cs.addElement(TextProperties(color = c.color, 
@@ -326,9 +326,9 @@ class SodsOds():
 			
 			dcs = DateStyle(name="dcs")
 			dcs.addElement(Year(style='long'))
-			dcs.addElement(Text(text = u'-'))
+			dcs.addElement(Text(text = '-'))
 			dcs.addElement(Month(style='long'))
-			dcs.addElement(Text(text = u'-'))
+			dcs.addElement(Text(text = '-'))
 			dcs.addElement(Day(style='long'))
 			odfdoc.styles.addElement(dcs)
 			
@@ -379,7 +379,7 @@ class SodsOds():
 					tc = TableCell(valuetype = 'string', stylename = style_name)
 				
 				# set ods text
-				tc.addElement(P(text = unicode(escape(c.text), 'utf-8')))
+				tc.addElement(P(text = str(escape(c.text), 'utf-8')))
 				
 				tr.addElement(tc)
 
@@ -388,12 +388,12 @@ class SodsOds():
 		
 if __name__ == "__main__":
 	
-	from sodsspreadsheet import SodsSpreadSheet
+	from .sodsspreadsheet import SodsSpreadSheet
 	
 	t = SodsSpreadSheet(12, 12)
 	
-	print "Test spreadsheet naming:"
-	print "-----------------------"
+	print("Test spreadsheet naming:")
+	print("-----------------------")
 	
 	t.setStyle("A1", text = "שלום עולם")
 	t.setStyle("A1:G2", background_color = "#00ff00")
@@ -423,12 +423,12 @@ if __name__ == "__main__":
 	tw = SodsOds(t)
 	tw.save("test.ods")
 	
-	print "Test load:"
-	print "----------"
+	print("Test load:")
+	print("----------")
 	
 	t2 = SodsSpreadSheet(12, 12)
 	tw = SodsOds(t2)
 	tw.load("test.ods")
 	
-	print t2.getCell("A1").text
-	print t2.getCell("D3").condition_state
+	print(t2.getCell("A1").text)
+	print(t2.getCell("D3").condition_state)

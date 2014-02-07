@@ -22,7 +22,7 @@ import re
 import math
 from datetime import datetime
 
-from sodstable import SodsTable
+from .sodstable import SodsTable
 
 class SodsSpreadSheet(SodsTable):
 	def __init__(self, i_max = 30, j_max = 30):
@@ -103,7 +103,7 @@ class SodsSpreadSheet(SodsTable):
 			a2 = self.parseOneCellName(names[1])
 			
 			if a1 and a2:
-				return (range(a1[0], a2[0] + 1), range(a1[1], a2[1] + 1))
+				return (list(range(a1[0], a2[0] + 1)), list(range(a1[1], a2[1] + 1)))
 			
 		return None
 	
@@ -524,8 +524,8 @@ if __name__ == "__main__":
 	
 	t = SodsSpreadSheet()
 	
-	print "Test spreadsheet naming:"
-	print "-----------------------"
+	print("Test spreadsheet naming:")
+	print("-----------------------")
 	
 	t.setStyle("A1", text = "Hello world")
 	t.setStyle("A1:G2", background_color = "#00ff00")
@@ -558,9 +558,9 @@ if __name__ == "__main__":
 	
 	t.updateTable()
 	
-	print t.getCell("D3").text
-	print t.getCell("D3").condition_state
-	print t.getCell("D11").text
-	print t.getCell("D13").text
+	print(t.getCell("D3").text)
+	print(t.getCell("D3").condition_state)
+	print(t.getCell("D11").text)
+	print(t.getCell("D13").text)
 	
 	

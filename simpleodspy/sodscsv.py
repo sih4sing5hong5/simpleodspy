@@ -55,18 +55,18 @@ class SodsCsv():
 		
 		# if filename is - print to stdout
 		if filename == '-':
-			print self.exportCsv(i_max, j_max, delimiter, txt_delimiter)
+			print(self.exportCsv(i_max, j_max, delimiter, txt_delimiter))
 		else:
 			file(filename,"w").write(self.exportCsv(i_max, j_max, delimiter, txt_delimiter))
 		
 if __name__ == "__main__":
 	
-	from sodsspreadsheet import SodsSpreadSheet
+	from .sodsspreadsheet import SodsSpreadSheet
 	
 	t = SodsSpreadSheet()
 	
-	print "Test spreadsheet naming:"
-	print "-----------------------"
+	print("Test spreadsheet naming:")
+	print("-----------------------")
 	
 	t.setStyle("A1", text = "Simple ods python")
 	t.setStyle("A1:G2", background_color = "#00ff00")

@@ -22,8 +22,8 @@ from simpleodspy.sodsspreadsheet import SodsSpreadSheet
 
 t = SodsSpreadSheet(10, 10)
 	
-print "Test spreadsheet naming:"
-print "-----------------------"
+print("Test spreadsheet naming:")
+print("-----------------------")
 
 # setting values and formulas
 t.setValue("A1", "Hello world !")

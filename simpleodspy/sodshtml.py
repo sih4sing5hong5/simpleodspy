@@ -174,7 +174,7 @@ class SodsHtml():
             background_color + border_top + border_bottom + 
             border_left + border_right + text_align + direction)
         
-        if style_id in self.styles.keys():
+        if style_id in list(self.styles.keys()):
             self.cell_styles[cell_name] = self.styles[style_id]
             return ""
         
@@ -383,18 +383,18 @@ a.info:hover span {
         
         # if filename is - print to stdout
         if filename == '-':
-            print self.exportHtml(i_max, j_max, headers, tip)
+            print(self.exportHtml(i_max, j_max, headers, tip))
         else:
             file(filename,"w").write(self.exportHtml(i_max, j_max, headers, tip))
         
 if __name__ == "__main__":
     
-    from sodsspreadsheet import SodsSpreadSheet
+    from .sodsspreadsheet import SodsSpreadSheet
     
     t = SodsSpreadSheet(20,6)
     
-    print "Test spreadsheet naming:"
-    print "-----------------------"
+    print("Test spreadsheet naming:")
+    print("-----------------------")
     
     t.setStyle("A1", text = "Hello world")
     t.setStyle("A1:G2", background_color = "#00ff00")

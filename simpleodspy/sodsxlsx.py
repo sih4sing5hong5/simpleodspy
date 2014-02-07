@@ -115,18 +115,18 @@ class SodsXlsx():
 				elif c.value_type == 'date':
 					ws.cell(cell).value = datetime.strptime(c.date_value, "%Y-%m-%d")
 				else:
-					ws.cell(cell).value = unicode(c.text, 'utf-8') + " "
+					ws.cell(cell).value = str(c.text, 'utf-8') + " "
 		
 		ew.save(filename = filename)
 		
 if __name__ == "__main__":
 	
-	from sodsspreadsheet import SodsSpreadSheet
+	from .sodsspreadsheet import SodsSpreadSheet
 	
 	t = SodsSpreadSheet(30,30)
 	
-	print "Test spreadsheet naming:"
-	print "-----------------------"
+	print("Test spreadsheet naming:")
+	print("-----------------------")
 	
 	t.setStyle("A1", text = "Hello world")
 	t.setStyle("A1:G2", background_color = "#00ff00")

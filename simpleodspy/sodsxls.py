@@ -138,7 +138,7 @@ class SodsXls():
 	def getFont(self, name, height, color, font_id):
 		''' find a font in the fonts disctionary '''
 		
-		if not font_id in self.fonts.keys():
+		if not font_id in list(self.fonts.keys()):
 			fnt = Font()
 			fnt.name = name
 			fnt.height = height
@@ -150,7 +150,7 @@ class SodsXls():
 	def getBorder(self, c, border_id):
 		''' find a font in the fonts disctionary '''
 		
-		if not border_id in self.borders.keys():
+		if not border_id in list(self.borders.keys()):
 			borders = Borders()
 			if c.border_left != "none":
 				borders.left = self.convertXlsBorderWidth(c.border_left)
@@ -171,7 +171,7 @@ class SodsXls():
 	def getFill(self, background_color, fill_id):
 		''' find a font in the fonts disctionary '''
 		
-		if not fill_id in self.fills.keys():
+		if not fill_id in list(self.fills.keys()):
 			pattern = Pattern()
 			if background_color != "default":
 				pattern.pattern = Pattern.SOLID_PATTERN
@@ -183,7 +183,7 @@ class SodsXls():
 	def getStyle(self, fnt, borders, pattern, style_id):
 		''' find a font in the fonts disctionary '''
 		
-		if not style_id in self.styles.keys():
+		if not style_id in list(self.styles.keys()):
 			style = XFStyle()
 			style.font = fnt
 			style.borders = borders
@@ -269,12 +269,12 @@ class SodsXls():
 		
 if __name__ == "__main__":
 	
-	from sodsspreadsheet import SodsSpreadSheet
+	from .sodsspreadsheet import SodsSpreadSheet
 	
 	t = SodsSpreadSheet(200, 200)
 	
-	print "Test spreadsheet naming:"
-	print "-----------------------"
+	print("Test spreadsheet naming:")
+	print("-----------------------")
 	
 	t.setStyle("A1", text = "Hello world")
 	t.setStyle("A1:G2", background_color = "#00ff00")

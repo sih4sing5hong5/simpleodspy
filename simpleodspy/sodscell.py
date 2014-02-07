@@ -120,8 +120,8 @@ class SodsCell:
 if __name__ == "__main__":
 	c = SodsCell()
 
-	print "Test html export:"
-	print "-----------------"
+	print("Test html export:")
+	print("-----------------")
 	
 	c.text = "hello world"
 	c.condition_state = True
