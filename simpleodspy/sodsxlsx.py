@@ -114,8 +114,10 @@ class SodsXlsx():
 					ws.cell(cell).value = c.value
 				elif c.value_type == 'date':
 					ws.cell(cell).value = datetime.strptime(c.date_value, "%Y-%m-%d")
-				else:
+				elif isinstance(c.text, bytes):
 					ws.cell(cell).value = str(c.text, 'utf-8') + " "
+				else:
+					ws.cell(cell).value = str(c.text) + " "
 		
 		ew.save(filename = filename)
 		
