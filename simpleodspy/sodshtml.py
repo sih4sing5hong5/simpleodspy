@@ -278,7 +278,7 @@ a.info:hover span {
                 out += self.exportCellCss(c, i, j)
         out += "</style>"
         
-        return out.encode('utf-8')
+        return out
     
     def exportTableHtml(self, i_max = None, j_max = None, headers = False, tip = False):
         ''' export table in html format '''
