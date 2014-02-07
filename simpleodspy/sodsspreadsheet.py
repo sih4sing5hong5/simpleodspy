@@ -58,7 +58,7 @@ class SodsSpreadSheet(SodsTable):
 		''' encode a col number 1.. to a name "A" or "BC" '''
 		
 		n1 = (n - 1) % 26
-		n2 = int((n - 1) / 26)
+		n2 = (n - 1) // 26
 		
 		if n2 == 0:
 			return chr(ord('A') + n1)
