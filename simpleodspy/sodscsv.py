@@ -57,7 +57,7 @@ class SodsCsv():
 		if filename == '-':
 			print(self.exportCsv(i_max, j_max, delimiter, txt_delimiter))
 		else:
-			file(filename,"w").write(self.exportCsv(i_max, j_max, delimiter, txt_delimiter))
+			open(filename,"w").write(self.exportCsv(i_max, j_max, delimiter, txt_delimiter))
 		
 if __name__ == "__main__":
 	

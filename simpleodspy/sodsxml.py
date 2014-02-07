@@ -172,12 +172,12 @@ class SodsXml():
 		if filename == '-':
 			print(self.exportXml(i_max, j_max))
 		else:
-			file(filename,"w").write(self.exportXml(i_max, j_max))
+			open(filename,"w").write(self.exportXml(i_max, j_max))
 		
 	def load(self, filename):
 		''' load table in xml format '''
 		
-		self.importXml(file(filename).read())
+		self.importXml(open(filename).read())
 		
 if __name__ == "__main__":
 	

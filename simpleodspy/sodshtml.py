@@ -385,7 +385,7 @@ a.info:hover span {
         if filename == '-':
             print(self.exportHtml(i_max, j_max, headers, tip))
         else:
-            file(filename,"w").write(self.exportHtml(i_max, j_max, headers, tip))
+            open(filename,"w").write(self.exportHtml(i_max, j_max, headers, tip))
         
 if __name__ == "__main__":
     
