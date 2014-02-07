@@ -1,21 +1,21 @@
 Simple Open Document Spreadsheet py
 
--Simple pure python spreadsheet class with Open Document Spreadsheet support.
+Simple pure python spreadsheet class with Open Document Spreadsheet support.
 
 	* Pure python implementation
 	* Set cell value and style using it's spreadsheet name (e.g. "A3" or "B4:C5")
 	* Set and calculate simple formulas (e.g. "A3*2+B5" or "SUM(B4:C5)")
 	* Set conditional styles (e.g. "cell-content()<=0")
 	* Import and export xml files
-	* Import and export Open Document Format ods files (requires odfpy installed)
 	* Export html and csv files
-	* Export Excel xls files (requires xlwt installed)
-	* Export Excel xlsx files (requires openpyxl installed)
+	* Export Excel xls files (requires xlwt-future installed)
+	* Import and export Open Document Format ods files (requires odfpy installed, but odfpy doesn't support Python 3)
+	* Export Excel xlsx files (requires openpyxl installed, but with some errors)
 
--Install
+Install
 	* python setup.py install
 	
--Website
+Website
 	* Project website(version<=v1.2):
 		http://simple-odspy.sourceforge.net/
 	* Projects svn(version<=v1.2):
