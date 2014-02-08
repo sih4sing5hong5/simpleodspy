@@ -15,5 +15,6 @@ setup(name='simpleodspy',
 	      'Programming Language :: Python :: 2.7',
 	      'Programming Language :: Python :: 3'
 	  ],
+	  install_requires=['xlwt-future>=0.8.0'],
      )
      
