@@ -4,7 +4,7 @@
 from distutils.core import setup
 
 setup(name='simpleodspy',
-      version='1.3.2',
+      version='1.4.0',
       description='Simple spreadsheet class with ods export',
       author='Yaacov Zamir',
       author_email='kzamir@walla.co.il',
@@ -12,8 +12,7 @@ setup(name='simpleodspy',
       packages=['simpleodspy'],
       
 	  classifiers=[
-	      'Programming Language :: Python :: 2.7',
-	      'Programming Language :: Python :: 3'
+	      'Programming Language :: Python :: 3.3'
 	  ],
 	  install_requires=['xlwt-future>=0.8.0'],
      )

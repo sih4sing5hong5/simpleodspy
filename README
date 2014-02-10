@@ -2,6 +2,7 @@ Simple Open Document Spreadsheet py
 
 Simple pure python spreadsheet class with Open Document Spreadsheet support.
 
+	* Need python3 because xlwt-future
 	* Pure python implementation
 	* Set cell value and style using it's spreadsheet name (e.g. "A3" or "B4:C5")
 	* Set and calculate simple formulas (e.g. "A3*2+B5" or "SUM(B4:C5)")
