@@ -38,9 +38,9 @@ class SodsHtml():
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 %s
-</head><body onLoad="window.scrollTo(%d,0);">
+</head><body onLoad="window.scrollTo(%d,0);"><div class='main'>
 %s
-</body></html>'''
+</div></body></html>'''
 
 	def fancyNumber(self, f, sep = ",", neg = "-", pos = ""):
 		''' format a fancy string for a number '''
@@ -291,7 +291,7 @@ a.info:hover span {
 		# self.table.updateTable(i_max, j_max)
 
 		# create the table element of the html page
-		out = "<div class='main'><table>\n"
+		out = "<table>\n"
 
 		# columns
 		if headers:
@@ -356,7 +356,7 @@ a.info:hover span {
 					out += "<td class = '%s'>%s</td>\n" % (self.cell_styles[cell_name], text)
 
 			out += "</tr>\n"
-		out += "</table></div>"
+		out += "</table>"
 
 		return out
 
@@ -381,8 +381,9 @@ a.info:hover span {
 		self.table.updateTable(i_max, j_max)
 		self.table.updateTable(i_max, j_max)
 
-		return (self.exportTableHtml(i_max, j_max, headers, tip),
-			self.exportTableCss(i_max, j_max),)
+		css = self.exportTableCss(i_max, j_max)
+		html = self.exportTableHtml(i_max, j_max, headers, tip)
+		return (html, css,)
 
 	def save(self, filename, i_max = None, j_max = None, headers = False, tip = False):
 		''' save table in xml format '''
